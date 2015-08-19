@@ -11,6 +11,7 @@
 namespace SoamService
 {
     using SampleClient;
+    using System;
     using System.IO;
     using System.Runtime.Serialization;
     using System.Runtime.Serialization.Formatters.Binary;
@@ -262,17 +263,14 @@ namespace SoamService
             this.SoamInput = soamInput;
         }
 
-        public SoamInvokeRequest(MyInput data)
+        public void SetSoamInputObject(Message input)
         {
-            //MemoryStream ms = new MemoryStream();
-            //BinaryFormatter bf = new BinaryFormatter();
-            //bf.Serialize(ms, data);
-            //ms.Close();
-
-            //this.SoamInput = ms.ToArray();
-
-            string json = JsonHelper.ToJson<MyInput>(data);
-            this.SoamInput = System.Text.Encoding.Default.GetBytes(json);
+            using (OutputStream ms = new OutputStream())
+            {
+                input.onSerialize(ms);
+                this.SoamInput = ms.ToArray();
+                ms.Close();
+            }
         }
     }
 
@@ -294,15 +292,14 @@ namespace SoamService
             this.SoamOutput = soamOutput;
         }
 
-        public MyOutput GetObject(){
-            //MemoryStream ms = new MemoryStream(this.SoamOutput);
-            //BinaryFormatter bf = new BinaryFormatter();
-            //object o = bf.Deserialize(ms);
-            //ms.Close();
-
-            //return o;
-            string json = System.Text.Encoding.Default.GetString(this.SoamOutput);
-            return JsonHelper.FromJson<MyOutput>(json);
+        public void GetSoamOutputObject(Message output)
+        {
+            Console.WriteLine("output bytes:{0}", SoamOutput.Length);
+            using (InputStream ms = new InputStream(this.SoamOutput))
+            {
+                output.onDeserialize(ms);
+                ms.Close();
+            }
         }
     }
 
@@ -401,5 +398,50 @@ namespace SoamService
         }
     }
 
-}
+    public abstract class Message
+    {
 
+        //=========================================================================
+        //  Constructors
+        //=========================================================================
+        public Message()
+        {
+
+        }
+
+        public abstract void onDeserialize(InputStream stream);
+
+        public abstract void onSerialize(OutputStream stream);
+    }
+
+    public class InputStream : MemoryStream
+    {
+        public InputStream()
+            : base()
+        {
+
+        }
+
+        public InputStream(byte[] buffer)
+            : base(buffer)
+        {
+
+        }
+    }
+
+    public class OutputStream : MemoryStream
+    {
+        public OutputStream()
+            : base()
+        {
+
+        }
+
+        public OutputStream(byte[] buffer)
+            : base(buffer)
+        {
+
+        }
+    }
+
+}

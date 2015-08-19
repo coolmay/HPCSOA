@@ -46,13 +46,14 @@ namespace SampleClient
                 // FireNRecollect project for details
                 using (BrokerClient<ISoamSvc> client = new BrokerClient<ISoamSvc>(session, binding))
                 {
-                    Console.Write("Sending {0} requests...", numRequests);
+                    Console.WriteLine("Sending {0} requests...", numRequests);
                     for (int i = 0; i < numRequests; i++)
                     {
                         // SoamInvokeRequest are created as you add Service Reference
                         // SoamInvokeService to the project
                         MyInput input = new MyInput();
-                        SoamInvokeRequest request = new SoamInvokeRequest(input);
+                        SoamInvokeRequest request = new SoamInvokeRequest();
+                        request.SetSoamInputObject(input);
                         client.SendRequest<SoamInvokeRequest>(request, i);
                         Console.WriteLine("\tSent request {0}: {1}", i, input);
                     }
@@ -73,7 +74,8 @@ namespace SampleClient
                     {
                         try
                         {
-                            MyOutput reply = (MyOutput)response.Result.GetObject();
+                            MyOutput reply = new MyOutput();
+                            response.Result.GetSoamOutputObject(reply);
                             Console.WriteLine("\tReceived response for request {0}: {1}", response.GetUserData<int>(), reply);
                         }
                         catch (Exception ex)

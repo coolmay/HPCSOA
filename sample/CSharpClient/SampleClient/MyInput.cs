@@ -4,11 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
+using SoamService;
+using System.IO;
 
-namespace SoamService
+namespace SampleClient
 {
-    [Serializable]
-    public class MyInput
+    public class MyInput : Message
     {
         public MyInput()
         {
@@ -134,8 +135,33 @@ namespace SoamService
         [JsonProperty("m_string")]
         private String m_string = "This is a sample string from MyInput.";
         [JsonProperty("m_bytes")]
-        private byte[] m_bytes = {0x11, 0x22, 0x33, 0x44};
+        private byte[] m_bytes = { 0x11, 0x22, 0x33, 0x44 };
         [JsonProperty("m_date")]
         private System.DateTime m_date = DateTime.Now;
+
+        public override void onDeserialize(InputStream stream)
+        {
+            byte[] data = stream.ToArray();
+            string json = Encoding.Default.GetString(data);
+            MyInput my = JsonHelper.FromJson<MyInput>(json);
+
+            this.m_boolean = my.isBoolean();
+            this.m_int = my.getInt();
+            this.m_long = my.getLong();
+            this.m_float = my.getFloat();
+            this.m_double = my.getDouble();
+            this.m_string = my.getString();
+            this.m_bytes = my.getBytes();
+            this.m_date = my.getDate();
+        }
+
+        public override void onSerialize(OutputStream stream)
+        {
+            string json = JsonHelper.ToJson<MyInput>(this);
+            byte[] data = Encoding.Default.GetBytes(json);
+            stream.Write(data, 0, data.Length);
+            stream.Flush();
+        }
+
     }
 }

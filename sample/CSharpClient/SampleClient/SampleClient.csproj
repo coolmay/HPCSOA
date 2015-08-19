@@ -57,8 +57,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="JsonHelper.cs" />
-    <Compile Include="MyOutput.cs" />
     <Compile Include="MyInput.cs" />
+    <Compile Include="MyOutput.cs" />
     <Compile Include="SoamClientProxy.cs" />
     <Compile Include="Program.cs" />
   </ItemGroup>
