@@ -214,3 +214,18 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
+/nbproject/private/
+
+#############
+## NetBeans
+#############
+build.xml
+manifest.mf
+nbproject/
+
+#############
+## Others
+#############
+apache-cxf-2.4.0/
+
+
