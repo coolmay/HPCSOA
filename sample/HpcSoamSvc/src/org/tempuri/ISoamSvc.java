@@ -15,37 +15,8 @@ import javax.xml.ws.ResponseWrapper;
  *
  */
 @WebService(targetNamespace = "http://tempuri.org/", name = "ISoamSvc")
-@XmlSeeAlso({ObjectFactory.class, com.microsoft.schemas._2003._10.serialization.ObjectFactory.class, org.datacontract.schemas._2004._07.echosvclib.ObjectFactory.class})
+@XmlSeeAlso({ObjectFactory.class, com.microsoft.schemas._2003._10.serialization.ObjectFactory.class})
 public interface ISoamSvc {
-
-    @WebResult(name = "EchoDataResult", targetNamespace = "http://tempuri.org/")
-    @Action(input = "http://tempuri.org/ISoamSvc/EchoData", output = "http://tempuri.org/ISoamSvc/EchoDataResponse")
-    @RequestWrapper(localName = "EchoData", targetNamespace = "http://tempuri.org/", className = "org.tempuri.EchoData")
-    @WebMethod(operationName = "EchoData", action = "http://tempuri.org/ISoamSvc/EchoData")
-    @ResponseWrapper(localName = "EchoDataResponse", targetNamespace = "http://tempuri.org/", className = "org.tempuri.EchoDataResponse")
-    public java.lang.Integer echoData(
-            @WebParam(name = "dataClientId", targetNamespace = "http://tempuri.org/") java.lang.String dataClientId
-    );
-
-    @WebResult(name = "GenerateLoadResult", targetNamespace = "http://tempuri.org/")
-    @Action(input = "http://tempuri.org/ISoamSvc/GenerateLoad", output = "http://tempuri.org/ISoamSvc/GenerateLoadResponse")
-    @RequestWrapper(localName = "GenerateLoad", targetNamespace = "http://tempuri.org/", className = "org.tempuri.GenerateLoad")
-    @WebMethod(operationName = "GenerateLoad", action = "http://tempuri.org/ISoamSvc/GenerateLoad")
-    @ResponseWrapper(localName = "GenerateLoadResponse", targetNamespace = "http://tempuri.org/", className = "org.tempuri.GenerateLoadResponse")
-    public org.datacontract.schemas._2004._07.echosvclib.StatisticInfo generateLoad(
-            @WebParam(name = "runMilliSeconds", targetNamespace = "http://tempuri.org/") java.lang.Double runMilliSeconds,
-            @WebParam(name = "dummyData", targetNamespace = "http://tempuri.org/") byte[] dummyData,
-            @WebParam(name = "fileData", targetNamespace = "http://tempuri.org/") java.lang.String fileData
-    );
-
-    @WebResult(name = "EchoResult", targetNamespace = "http://tempuri.org/")
-    @Action(input = "http://tempuri.org/ISoamSvc/Echo", output = "http://tempuri.org/ISoamSvc/EchoResponse")
-    @RequestWrapper(localName = "Echo", targetNamespace = "http://tempuri.org/", className = "org.tempuri.Echo")
-    @WebMethod(operationName = "Echo", action = "http://tempuri.org/ISoamSvc/Echo")
-    @ResponseWrapper(localName = "EchoResponse", targetNamespace = "http://tempuri.org/", className = "org.tempuri.EchoResponse")
-    public java.lang.String echo(
-            @WebParam(name = "input", targetNamespace = "http://tempuri.org/") java.lang.String input
-    );
 
     @WebResult(name = "SoamInvokeResult", targetNamespace = "http://tempuri.org/")
     @Action(input = "http://tempuri.org/ISoamSvc/SoamInvoke", output = "http://tempuri.org/ISoamSvc/SoamInvokeResponse")

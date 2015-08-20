@@ -10,7 +10,6 @@ import org.apache.cxf.headers.Header;
 import org.apache.cxf.helpers.CastUtils;
 import org.apache.cxf.jaxws.context.WrappedMessageContext;
 import org.apache.cxf.message.Message;
-import org.datacontract.schemas._2004._07.echosvclib.StatisticInfo;
 import org.w3c.dom.Element;
 import com.microsoft.hpc.scheduler.session.DataClient;
 import com.microsoft.hpc.scheduler.session.servicecontext.ServiceContext;
@@ -40,112 +39,6 @@ public class ISoamSvcImpl implements ISoamSvc {
     private static final int BufferSize = 64000;
     private static final Logger LOG = Logger.getLogger(ISoamSvcImpl.class
             .getName());
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.tempuri.ISoamSvc#echoData(java.lang.String dataClientId )*
-     */
-    public java.lang.Integer echoData(java.lang.String dataClientId) {
-        ServiceContext.Logger.traceEvent(Level.INFO,
-                "Executing operation echoData");
-        ServiceContext.Logger.traceEvent(Level.ALL, dataClientId);
-        try {
-            DataClient client = ServiceContext.getDataClient(dataClientId);
-            byte[] data = client.readRawBytesAll();
-            return data.length;
-        } catch (java.lang.Exception ex) {
-            ex.printStackTrace();
-            throw new RuntimeException(ex);
-        }
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.tempuri.ISoamSvc#generateLoad(java.lang.Double runMilliSeconds
-     * ,)byte[] dummyData ,)java.lang.String fileData )*
-     */
-    public StatisticInfo generateLoad(java.lang.Double runMilliSeconds,
-            byte[] dummyData, java.lang.String fileData) {
-        ServiceContext.Logger.traceEvent(Level.INFO,
-                "Executing operation generateLoad");
-        ServiceContext.Logger.traceEvent(Level.ALL, runMilliSeconds.toString());
-        try {
-            StatisticInfo info = new StatisticInfo();
-
-            // Set start time to now.
-            info.setStartTime(Utility.getXMLCurrentTime());
-
-            if (!Utility.isNullOrEmpty(fileData)) {
-                byte[] buffer = new byte[BufferSize];
-                int readed;
-                InputStream file;
-                try {
-                    file = new FileInputStream(new File(fileData));
-                } catch (FileNotFoundException e) {
-                    throw new Exception("File not found", e);
-                }
-
-                do {
-                    readed = file.read(buffer, 0, BufferSize);
-                } while (readed != BufferSize);
-
-                file.close();
-            }
-
-            GregorianCalendar target = new GregorianCalendar();
-            target.add(GregorianCalendar.MILLISECOND,
-                    runMilliSeconds.intValue());
-            String dummy = System.getenv("CCP_TASKINSTANCEID");
-            if (!Utility.isNullOrEmpty(dummy)) {
-                try {
-                    info.setTaskId(Integer.parseInt(dummy));
-                } catch (NumberFormatException e) {
-                    // taskid to default (0)
-                    info.setTaskId(0);
-                }
-            }
-
-            while (GregorianCalendar.getInstance().before(target)) {
-                // busy wait
-            }
-
-            info.setEndTime(Utility.getXMLCurrentTime());
-
-            return info;
-        } catch (java.lang.Exception ex) {
-            ex.printStackTrace();
-            throw new RuntimeException(ex);
-        }
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.tempuri.ISoamSvc#echo(java.lang.String input )*
-     */
-    public java.lang.String echo(java.lang.String input) {
-        ServiceContext.Logger
-                .traceEvent(Level.INFO, "Executing operation echo");
-        ServiceContext.Logger.traceEvent(Level.ALL, input);
-        ServiceContext.Logger.traceEvent(Level.INFO, "Start to use ETW tracing...");
-        ETWTraceEvent etw = new ETWTraceEvent(wsContext);
-        etw.TraceInformation(input);
-
-        TraceHelper.traceInformation("echo input: " + input);
-        String userData = getUserData();
-        ServiceContext.Logger.traceEvent(Level.INFO, "UserData : " + userData);
-        TraceHelper.traceInformation("echo UserData: " + userData);
-        try {
-            String computername = InetAddress.getLocalHost().getHostName();
-            TraceHelper.traceInformation("echo return string: " + computername + ":" + input);
-            return computername + ":" + input;
-        } catch (java.lang.Exception ex) {
-            ex.printStackTrace();
-            throw new RuntimeException(ex);
-        }
-    }
 
     /*
      * (non-Javadoc)
