@@ -30,6 +30,8 @@ public interface IBrokerController {
         java.lang.Integer count,
         @WebParam(name = "clientid", targetNamespace = "http://hpc.microsoft.com/brokercontroller/")
         java.lang.String clientid,
+        @WebParam(name = "batchId", targetNamespace = "http://hpc.microsoft.com/brokercontroller/")
+        java.lang.Integer batchId,
         @WebParam(name = "timeoutThrottlingMs", targetNamespace = "http://hpc.microsoft.com/brokercontroller/")
         java.lang.Integer timeoutThrottlingMs,
         @WebParam(name = "timeoutEOMMs", targetNamespace = "http://hpc.microsoft.com/brokercontroller/")
@@ -55,6 +57,8 @@ public interface IBrokerController {
         java.lang.Integer count,
         @WebParam(name = "clientid", targetNamespace = "http://hpc.microsoft.com/brokercontroller/")
         java.lang.String clientid,
+        @WebParam(name = "batchId", targetNamespace = "http://hpc.microsoft.com/brokercontroller/")
+        java.lang.Integer batchId,
         @WebParam(name = "timeoutThrottlingMs", targetNamespace = "http://hpc.microsoft.com/brokercontroller/")
         java.lang.Integer timeoutThrottlingMs,
         @WebParam(name = "timeoutFlushMs", targetNamespace = "http://hpc.microsoft.com/brokercontroller/")

@@ -18,7 +18,7 @@ import javax.xml.ws.ResponseWrapper;
 @XmlSeeAlso({ObjectFactory.class, com.microsoft.schemas._2003._10.serialization.ObjectFactory.class})
 public interface ISoamSvc {
 
-    @WebResult(name = "SoamInvokeResult", targetNamespace = "http://tempuri.org/")
+    @WebResult(name = "SoamOutput", targetNamespace = "http://tempuri.org/")
     @Action(input = "http://tempuri.org/ISoamSvc/SoamInvoke", output = "http://tempuri.org/ISoamSvc/SoamInvokeResponse")
     @RequestWrapper(localName = "SoamInvoke", targetNamespace = "http://tempuri.org/", className = "org.tempuri.SoamInvoke")
     @WebMethod(operationName = "SoamInvoke", action = "http://tempuri.org/ISoamSvc/SoamInvoke")

@@ -182,7 +182,7 @@ class CxfBrokerClient<TContract extends Service> extends CxfClientBase {
                 TraceHelper.traceInformation("responseMap :" + response.className() + " -> null");
             } else {
                 responseMap.put(response.className(), action.input());
-                TraceHelper.traceInformation("responseMap :" + request.className() + " -> " + action.input());
+                TraceHelper.traceInformation("responseMap :" + response.className() + " -> " + action.input());
             }
         }
     }
@@ -305,10 +305,10 @@ class CxfBrokerClient<TContract extends Service> extends CxfClientBase {
      */
     private void generateMessageIdHeader(Map<String, Object> requestContext, SOAPMessage msg, UUID messageId)
             throws SOAPException {
-        AddressingProperties maps = (AddressingProperties) requestContext.get(CLIENT_ADDRESSING_PROPERTIES);
-        AttributedURIType messageID = wsaObjectFactory.createAttributedURIType();
-        messageID.setValue("urn:uuid:" + messageId.toString());
-        maps.setMessageID(messageID);
+//        AddressingProperties maps = (AddressingProperties) requestContext.get(CLIENT_ADDRESSING_PROPERTIES);
+//        AttributedURIType messageID = wsaObjectFactory.createAttributedURIType();
+//        messageID.setValue("urn:uuid:" + messageId.toString());
+//        maps.setMessageID(messageID);
 
         SOAPHeader header = msg.getSOAPHeader();
         SOAPHeaderElement headerElement = header.addHeaderElement(new QName(

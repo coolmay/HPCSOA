@@ -7,12 +7,7 @@
 // </summary>
 //------------------------------------------------------------------------------
 
-import java.util.Random;
-import java.util.UUID;
-
 import org.tempuri.*;
-import javax.xml.soap.SOAPException;
-import javax.xml.ws.soap.SOAPFaultException;
 import com.microsoft.hpc.scheduler.session.*;
 import sample.common.*;
 
@@ -22,7 +17,7 @@ public class HelloWorld {
     public static String password = "!!123abc";  // valid user password 
     private static String headnode = "SOATest-HN"; // HPC cluster headnode hostname
     private static String serviceName = "SoamSvcLinux";
-    private static int nrequests = 1;
+    private static int nrequests = 5;
 
     public static void main(String[] args) {
         int nerrs = 0;
@@ -72,6 +67,7 @@ public class HelloWorld {
 
     private static int RunSoamTest() {
         int nerrs = 0;
+        int nresponses = 0;
         SessionStartInfo info = new SessionStartInfo(headnode, serviceName, username, password);
 //        Version ver = new Version(4, 4);
 //        SessionStartInfo info = new SessionStartInfo(headnode, serviceName, ver, username, password);
@@ -97,7 +93,9 @@ public class HelloWorld {
 
             System.out.println("Retrieving responses...");
 
+            
             for (BrokerResponse<SoamInvokeResponse> response : client.<SoamInvokeResponse>getResponses(SoamInvokeResponse.class)) {
+                nresponses ++;
                 try {
                     MyOutput reply = new MyOutput();
                     response.getResult().getSoamOutputObject(reply);
@@ -107,7 +105,7 @@ public class HelloWorld {
                     System.out.printf("Error: process %s-th reuqest: %s%n", response.getUserData(), ex.toString());
                 }
             }
-            System.out.printf("Done retrieving %d responses%n", nrequests);
+            System.out.printf("Done retrieving %d responses%n", nresponses);
             client.close();
             session.close();
         } catch (Throwable e) {

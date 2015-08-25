@@ -773,7 +773,7 @@ public class BrokerClient<TContract extends Service> {
                 controllerClient.setTimeout(largerTimeout);
             }
 
-            controllerClient.endRequests(count, clientId, largerTimeout,
+            controllerClient.endRequests(count, clientId, 0, largerTimeout,
                     timeoutMilliseconds);
         } catch (WebServiceException we) {
             if (we.getCause().getClass() == SocketTimeoutException.class) {
@@ -831,7 +831,7 @@ public class BrokerClient<TContract extends Service> {
                 controllerClient.setTimeout(largerTimeout);
             }
 
-            controllerClient.flush(count, clientId, largerTimeout,
+            controllerClient.flush(count, clientId, 0, largerTimeout,
                     timeoutMilliseconds);
         } catch (WebServiceException we) {
             if (we.getCause().getClass() == SocketTimeoutException.class) {
