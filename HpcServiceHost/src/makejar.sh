@@ -1,7 +1,7 @@
 #!/bin/sh
 
-export JAVA_HOME=/usr/java/jdk1.6.0_45
-export CXF_HOME=/opt/apache-cxf-2.4.0
+export JAVA_HOME=/usr/java/jdk1.8.0_60
+export CXF_HOME=/opt/apache-cxf-2.7.17
 export SOA_HOME=/soa/SoamSvcHostLinux
 export CLASSPATH=.:$CXF_HOME/lib/cxf-manifest.jar
 

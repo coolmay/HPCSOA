@@ -133,7 +133,7 @@ class CxfBrokerClient<TContract extends Service> extends CxfClientBase {
         Object interfaceObj = soaService.getPort(portName, interfaceType);
         Initialize(username, password, interfaceObj);
 
-        client = ClientProxy.getClient(serviceObj);
+//        client = ClientProxy.getClient(serviceObj);
 
         this.dispatchMap = new HashMap<String, Dispatch<SOAPMessage>>();
         wsaObjectFactory = new ObjectFactory();
@@ -143,7 +143,7 @@ class CxfBrokerClient<TContract extends Service> extends CxfClientBase {
         try {
             Field field = service.getDeclaredField("SERVICE");
             return (QName) field.get(null);
-        } catch (Exception e) {
+        } catch (Exception ex) {
             throw new IllegalArgumentException(
                     SR.v("RequireServiceContractType"));
         }

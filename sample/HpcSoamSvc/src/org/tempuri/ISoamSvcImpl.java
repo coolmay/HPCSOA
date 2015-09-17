@@ -45,6 +45,7 @@ public class ISoamSvcImpl implements ISoamSvc {
      * 
      * @see org.tempuri.ISoamSvc#soamInvoke(byte[] soamInput )*
      */
+    @Override
     public byte[] soamInvoke(byte[] soamInput) {
         ServiceContext.Logger.traceEvent(Level.INFO,
                 "Executing operation soamInvoke");
@@ -85,6 +86,9 @@ public class ISoamSvcImpl implements ISoamSvc {
     }
 
     private String getUserData() {
+        if(this.wsContext == null)
+            return "";
+        
         MessageContext mc = this.wsContext.getMessageContext();
         Message message = ((WrappedMessageContext) mc).getWrappedMessage();
         String userData = "";

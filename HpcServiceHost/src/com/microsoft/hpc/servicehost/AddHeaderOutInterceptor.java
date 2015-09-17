@@ -64,27 +64,16 @@
  */
 package com.microsoft.hpc.servicehost;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import javax.xml.namespace.QName;
-import javax.xml.soap.SOAPException;
-
-import org.apache.cxf.binding.soap.SoapFault;
-import org.apache.cxf.binding.soap.SoapHeader;
 import org.apache.cxf.binding.soap.SoapMessage;
 import org.apache.cxf.binding.soap.interceptor.AbstractSoapInterceptor;
-import org.apache.cxf.binding.soap.interceptor.Soap11FaultOutInterceptor;
 import org.apache.cxf.common.logging.LogUtils;
 import org.apache.cxf.headers.Header;
-import org.apache.cxf.helpers.CastUtils;
 import org.apache.cxf.interceptor.Fault;
-import org.apache.cxf.message.Message;
 import org.apache.cxf.phase.Phase;
 import org.w3c.dom.Element;
 

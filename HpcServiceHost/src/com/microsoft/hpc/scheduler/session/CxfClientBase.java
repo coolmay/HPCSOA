@@ -146,7 +146,7 @@ class CxfClientBase implements CallbackHandler
         outProps.put(WSHandlerConstants.USER, this.username);
         outProps.put(WSHandlerConstants.PASSWORD_TYPE, WSConstants.PW_TEXT);
         outProps.put(WSHandlerConstants.PW_CALLBACK_REF, this);
-
+        
         WSS4JOutInterceptor wssOut = new WSS4JOutInterceptor(outProps);
         cxfEndpoint.getOutInterceptors().add(wssOut);
     }
@@ -183,7 +183,7 @@ class CxfClientBase implements CallbackHandler
     }
 
     public void setTimeout(int timeout) {
-        Client client = ClientProxy.getClient(serviceObj);
+//        Client client = ClientProxy.getClient(serviceObj);
 
         setClientTimeout(client, timeout);
     }
@@ -212,7 +212,7 @@ class CxfClientBase implements CallbackHandler
             UnsupportedCallbackException {
         for (int i = 0; i < callbacks.length; i++) {
             WSPasswordCallback pwcb = (WSPasswordCallback) callbacks[i];
-            if (pwcb.getIdentifier() == this.username)
+            if (pwcb.getIdentifier().equals(this.username))
                 pwcb.setPassword(this.password);
             else
                 throw new UnsupportedCallbackException(pwcb);

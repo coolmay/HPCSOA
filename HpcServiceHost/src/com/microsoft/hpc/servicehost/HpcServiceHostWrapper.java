@@ -74,22 +74,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import javax.jws.WebService;
-import javax.xml.ws.WebServiceFeature;
-import javax.xml.ws.soap.AddressingFeature;
-
-import org.apache.cxf.Bus;
-import org.apache.cxf.binding.soap.interceptor.Soap11FaultOutInterceptor;
 import org.apache.cxf.endpoint.Server;
-import org.apache.cxf.feature.AbstractFeature;
 import org.apache.cxf.interceptor.LoggingInInterceptor;
 import org.apache.cxf.interceptor.LoggingOutInterceptor;
 import org.apache.cxf.jaxws.JaxWsServerFactoryBean;
 import org.apache.cxf.transport.http_jetty.JettyHTTPDestination;
 import org.apache.cxf.transport.http_jetty.JettyHTTPServerEngine;
 import org.apache.cxf.transports.http.configuration.HTTPServerPolicy;
-import org.apache.cxf.ws.addressing.MAPAggregator;
 import org.apache.cxf.ws.addressing.WSAddressingFeature;
-import org.apache.cxf.ws.addressing.soap.MAPCodec;
 
 import com.microsoft.hpc.properties.ErrorCode;
 import com.microsoft.hpc.scheduler.session.Constant;
@@ -99,6 +91,17 @@ import com.microsoft.hpc.scheduler.session.servicecontext.ServiceRegistration;
 import com.microsoft.hpc.scheduler.session.servicecontext.StringResource;
 import com.microsoft.hpc.scheduler.session.servicecontext.TraceHelper;
 import java.io.File;
+import java.io.FileInputStream;
+import java.security.*;
+import java.util.HashMap;
+import java.util.Map;
+import javax.net.ssl.*;
+import org.apache.cxf.configuration.jsse.TLSServerParameters;
+import org.apache.cxf.configuration.security.ClientAuthentication;
+import org.apache.cxf.configuration.security.FiltersType;
+import org.apache.cxf.ws.security.wss4j.WSS4JInInterceptor;
+import org.apache.cxf.ws.security.wss4j.WSS4JOutInterceptor;
+import org.apache.ws.security.handler.WSHandlerConstants;
 
 /**
  * @author t-junchw
@@ -455,6 +458,22 @@ public class HpcServiceHostWrapper {
         TraceHelper.traceInformation("listenUri = " + listenUri);
 
         try {
+            // Set ssl info if using https
+//            JettyHTTPServerEngineFactory factory = new JettyHTTPServerEngineFactory();
+//            TLSServerParameters tlsParams = getSSLParameters();
+//            if (tlsParams != null) {
+//                // set ssl for host
+//                factory.setTLSServerParametersForPort(Constant.ServiceHostPort + portOffset, tlsParams);
+//                TraceHelper.traceInformation("Set tlsParams " + tlsParams.getSecureSocketProtocol() + " on Port " + (Constant.ServiceHostPort + portOffset));
+//                // set ssl for controller host
+//                factory.setTLSServerParametersForPort(Constant.ServiceHostControllerPort + portOffset, tlsParams);
+//                TraceHelper.traceInformation("Set tlsParams " + tlsParams.getSecureSocketProtocol() + " on Port " + (Constant.ServiceHostControllerPort + portOffset));
+//
+//            } else {
+//                TraceHelper.traceError("Security configuration failed.");
+//                return ErrorCode.ServiceHost_ServiceHostFailedToOpen;
+//            }
+
             host = new JaxWsServerFactoryBean();
             if (serviceRegistration.getEnableWSAddressing() == true) {
                 // add ws-addressing feature
@@ -501,10 +520,14 @@ public class HpcServiceHostWrapper {
                         new MessagePreemptionOutInterceptor(this));
             }
 
+            // add ws-security interceptors
+            addWSSHeaders(host);
+
             //enable the debug to stack trace in fault soap message
             host.getBus().setProperty("faultStackTraceEnabled", "true");
-            TraceHelper.traceInformation(StringResource
-                    .getResource("TryCreateHost"));
+
+            // create server
+            TraceHelper.traceInformation(StringResource.getResource("TryCreateHost"));
             Server server = host.create();
 
             // Update backend binding's receive timeout and max message settings
@@ -520,17 +543,17 @@ public class HpcServiceHostWrapper {
 
             HTTPServerPolicy httpServerPolicy = new HTTPServerPolicy();
             httpServerPolicy.setReceiveTimeout(receiveTimeout);
-
             ServiceContext.Logger.traceEvent(Level.ALL, "Service Operation Timeout" + receiveTimeout);
             destination.setServer(httpServerPolicy);
 
             TraceHelper.traceInformation("Service host successfully opened on "
-                    + listenUri);
+                    + server.getEndpoint().getEndpointInfo().getAddress());
 
             TraceHelper.traceInformation(StringResource
                     .getResource("TryOpenCtrlHost"));
             String endpointAddress = createEndpointAddress(Constant.ServiceHostControllerPort
                     + portOffset);
+
             OpenHostController(endpointAddress);
         } catch (Exception e) {
             TraceHelper.traceError(e.toString());
@@ -551,12 +574,152 @@ public class HpcServiceHostWrapper {
         return ErrorCode.Success;
     }
 
+    private void addWSSHeaders(JaxWsServerFactoryBean fc) {
+        final String WSSE_NS = "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd";
+        final String WSU_NS = "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd";
+
+        Map<String, Object> inProps = new HashMap<String, Object>();
+        inProps.put(WSHandlerConstants.ACTION,
+                WSHandlerConstants.TIMESTAMP + " "
+                + WSHandlerConstants.SIGNATURE + " "
+                + WSHandlerConstants.ENCRYPT + " "
+        );
+//        inProps.put(WSHandlerConstants.USER, KeyStorePasswordCallbackHandler.USERNAME);
+        inProps.put(WSHandlerConstants.PW_CALLBACK_CLASS, KeyStorePasswordCallbackHandler.class.getName());
+
+        inProps.put(WSHandlerConstants.SIG_PROP_FILE, "sign.properties");
+//        inProps.put(WSHandlerConstants.SIG_KEY_ID, "DirectReference");
+//        inProps.put(WSHandlerConstants.SIG_ALGO, "http://www.w3.org/2000/09/xmldsig#rsa-sha1");
+
+        inProps.put(WSHandlerConstants.DEC_PROP_FILE, "decrypt.properties");
+//        inProps.put(WSHandlerConstants.ENC_KEY_TRANSPORT, "http://www.w3.org/2001/04/xmlenc#rsa-oaep-mgf1p");
+
+        WSS4JInInterceptor wssIn = new WSS4JInInterceptor(inProps);
+        fc.getInInterceptors().add(wssIn);
+        // if occurs "not understood header" error.
+//        WSSPassThroughInterceptor wssPass = new WSSPassThroughInterceptor(this);
+//        fc.getInInterceptors().add(wssPass);
+
+        Map<String, Object> outProps = new HashMap<String, Object>();
+        outProps.put(WSHandlerConstants.ACTION,
+                WSHandlerConstants.TIMESTAMP + " "
+                + WSHandlerConstants.SIGNATURE + " "
+                + WSHandlerConstants.ENCRYPT + " "
+        );
+//        outProps.put(WSHandlerConstants.USER, KeyStorePasswordCallbackHandler.USERNAME);
+        outProps.put(WSHandlerConstants.PW_CALLBACK_CLASS, KeyStorePasswordCallbackHandler.class.getName());
+
+        outProps.put(WSHandlerConstants.SIGNATURE_USER, KeyStorePasswordCallbackHandler.USERNAME);
+        outProps.put(WSHandlerConstants.SIG_PROP_FILE, "decrypt.properties");
+//        outProps.put(WSHandlerConstants.SIG_KEY_ID, "DirectReference");
+//        outProps.put(WSHandlerConstants.SIG_ALGO, "http://www.w3.org/2000/09/xmldsig#rsa-sha1");
+        outProps.put(WSHandlerConstants.SIGNATURE_PARTS, "{Element}{" + WSU_NS + "}Timestamp;"
+                + "{Element}{http://schemas.xmlsoap.org/soap/envelope/}Body");;
+
+        outProps.put(WSHandlerConstants.ENCRYPTION_USER, KeyStorePasswordCallbackHandler.USERNAME);
+        outProps.put(WSHandlerConstants.ENC_PROP_FILE, "encrypt.properties");
+//        outProps.put(WSHandlerConstants.ENC_KEY_TRANSPORT, "http://www.w3.org/2001/04/xmlenc#rsa-oaep-mgf1p");
+        outProps.put(WSHandlerConstants.ENCRYPTION_PARTS, "{Element}{http://www.w3.org/2000/09/xmldsig#}Signature;{Content}{http://schemas.xmlsoap.org/soap/envelope/}Body");
+
+        WSS4JOutInterceptor wssOut = new WSS4JOutInterceptor(outProps);
+        fc.getOutInterceptors().add(wssOut);
+    }
+
+    private TLSServerParameters getSSLParameters() {
+        try {
+//            java.security.Security.setProperty("jdk.tls.disabledAlgorithms", "DHE, ECDHE");
+//            System.setProperty("https.protocols", "SSLv3,SSLv2Hello,TLSv1,TLSv1.1,TLSv1.2");
+//            System.setProperty("sun.security.ssl.allowUnsafeRenegotiation", "true");
+//            System.setProperty("javax.net.ssl.keyStore", keystore.getAbsolutePath());
+//            System.setProperty("javax.net.ssl.keyStorePassword", password);
+
+            String soahome = Environment.getEnvironmentVariable(Constant.SOA_HOMEEnvVar);
+
+            TLSServerParameters tlsParams = new TLSServerParameters();
+            KeyStore keyStore = KeyStore.getInstance("JKS");
+            String password = "!!!123abc";
+
+            File keystore = new File(soahome, "keystore.jks");
+            TraceHelper.traceInformation("Open KeyManager file " + keystore.getAbsolutePath());
+            keyStore.load(new FileInputStream(keystore), password.toCharArray());
+            KeyManagerFactory keyFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+            keyFactory.init(keyStore, password.toCharArray());
+            KeyManager[] km = keyFactory.getKeyManagers();
+            tlsParams.setKeyManagers(km);
+            TraceHelper.traceInformation("KeyManagerFactory.getDefaultAlgorithm(): " + KeyManagerFactory.getDefaultAlgorithm());
+
+            File truststore = new File(soahome, "truststore.jks");
+            TraceHelper.traceInformation("Open TrustManager file " + truststore.getAbsolutePath());
+            keyStore.load(new FileInputStream(truststore), password.toCharArray());
+            TrustManagerFactory trustFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+            trustFactory.init(keyStore);
+            TrustManager[] tm = trustFactory.getTrustManagers();
+            tlsParams.setTrustManagers(tm);
+            TraceHelper.traceInformation("TrustManagerFactory.getDefaultAlgorithm(): " + TrustManagerFactory.getDefaultAlgorithm());
+
+            FiltersType filter = new FiltersType();
+            filter.getInclude().add(".*_EXPORT_.*");
+            filter.getInclude().add(".*_EXPORT1024_.*");
+            filter.getInclude().add(".*_WITH_DES_.*");
+            filter.getInclude().add(".*_WITH_NULL_.*");
+            filter.getExclude().add(".*_DH_anon_.*");
+            tlsParams.setCipherSuitesFilter(filter);
+
+            ClientAuthentication ca = new ClientAuthentication();
+            ca.setRequired(false);
+            ca.setWant(false);
+            tlsParams.setClientAuthentication(ca);
+
+            tlsParams.setSecureSocketProtocol("TLSv1.2");
+            tlsParams.setJsseProvider("SunJSSE");
+//
+//            SSLServerSocket sslSocket = (SSLServerSocket) SSLServerSocketFactory.getDefault().createServerSocket();
+//            tlsParams.setJsseProvider("SunJSSE");
+//            TraceHelper.traceInformation("getJsseProvider: " + tlsParams.getJsseProvider());
+//
+//            String[] supportSuites = sslSocket.getSupportedCipherSuites();
+//            for (int i = 0; i < supportSuites.length; i++) {
+//                TraceHelper.traceInformation("sslSocket.getSupportedCipherSuites: " + supportSuites[i]);
+//            }
+//
+//            List<String> suites = java.util.Arrays.asList(supportSuites);
+//            tlsParams.setCipherSuites(suites);
+//
+//            suites = tlsParams.getCipherSuites();
+//            for (int i = 0; i < suites.size(); i++) {
+//                TraceHelper.traceInformation("tlsParams.getCipherSuites(): " + suites.get(i));
+//            }
+//            TraceHelper.traceInformation("tlsParams.getCipherSuites() count: " + suites.size());
+//
+            return tlsParams;
+        } catch (Exception e) {
+            TraceHelper.traceError("Security configuration failed with the following: " + e.toString());
+        }
+
+//        catch (KeyStoreException kse) {
+//            TraceHelper.traceError("Security configuration failed with the following: " + kse.getCause());
+//        } catch (NoSuchAlgorithmException nsa) {
+//            TraceHelper.traceError("Security configuration failed with the following: " + nsa.getCause());
+//        } catch (FileNotFoundException fnfe) {
+//            TraceHelper.traceError("Security configuration failed with the following: " + fnfe.getCause());
+//        } catch (UnrecoverableKeyException uke) {
+//            TraceHelper.traceError("Security configuration failed with the following: " + uke.getCause());
+//        } catch (CertificateException ce) {
+//            TraceHelper.traceError("Security configuration failed with the following: " + ce.getCause());
+//        } catch (GeneralSecurityException gse) {
+//            TraceHelper.traceError("Security configuration failed with the following: " + gse.getCause());
+//        } catch (IOException ioe) {
+//            TraceHelper.traceError("Security configuration failed with the following: " + ioe.getCause());
+//        }
+        return null;
+    }
+
     /**
      * @description opens the service host controller service
      * @remark port disabled sharing on CNs/WNs, we need to open another port
      * @param defaultBaseAddr
      */
-    private void OpenHostController(String defaultBaseAddr) {
+    private void OpenHostController(String defaultBaseAddr) throws IOException {
         TraceHelper.traceInformation("defaultBaseAddr of HostController is "
                 + defaultBaseAddr);
 
@@ -581,9 +744,9 @@ public class HpcServiceHostWrapper {
 
         TraceHelper.traceInformation(StringResource
                 .getResource("TryCreateCtrlHost"));
-        controllerhost.create();
-        TraceHelper.traceInformation("Controller opened.");
-
+        Server server = controllerhost.create();
+        TraceHelper.traceInformation("Controller opened on "
+                + server.getEndpoint().getEndpointInfo().getAddress());
     }
 
     /**

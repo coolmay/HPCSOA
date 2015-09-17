@@ -8,6 +8,7 @@ import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import com.microsoft.hpc.soam.Message;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
  * <p>
@@ -38,6 +39,7 @@ import com.microsoft.hpc.soam.Message;
 @XmlRootElement(name = "SoamInvokeResponse")
 public class SoamInvokeResponse {
 
+    @XmlJavaTypeAdapter(DummyAdapter.class)
     @XmlElementRef(name = "SoamOutput", namespace = "http://tempuri.org/", type = JAXBElement.class, required = false)
     protected JAXBElement<byte[]> soamOutput;
 

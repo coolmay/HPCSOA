@@ -1,6 +1,6 @@
 @echo off
 
-set JAVA_HOME=%ProgramFiles%\Java\jdk1.6.0_45
+set JAVA_HOME=%ProgramFiles%\Java\jdk1.8.0_60
 set CXF_HOME=c:\java\apache-cxf-2.4.0
 set SOA_HOME=D:\HPCSOA\SoamSvcHost
 set CLASSPATH=.;%CXF_HOME%\lib\cxf-manifest.jar

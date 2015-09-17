@@ -100,8 +100,8 @@ public final class LoggerContext
      */
     String traceFilePathFormat = "%s%s%s_%s.%s_trace.svclog";
 
-    String envCCP_DATA = Environment
-            .getEnvironmentVariable(Constant.CCP_DATAEnvVar);
+    String envSOA_HOME = Environment
+            .getEnvironmentVariable(Constant.SOA_HOMEEnvVar);
     String envCCP_TASKID = Environment
             .getEnvironmentVariable(Constant.TaskIDEnvVar);
     String envCCP_JOBID = Environment
@@ -118,7 +118,7 @@ public final class LoggerContext
     {
         this.traceLevel = Level.parse(level);
 
-        String tracefolder = envCCP_DATA + File.separator + "SOATrace";
+        String tracefolder = envSOA_HOME + File.separator + "SOATrace";
         String filepath = null;
 
         try

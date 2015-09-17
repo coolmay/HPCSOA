@@ -130,6 +130,7 @@ public class Main {
             Environment.setEnvironmentVariable(Constant.ServiceConfigFileNameEnvVar, param.getFileNameParameter()
                     .getValue());
             Environment.setEnvironmentVariable(Constant.CCP_DATAEnvVar, param.getCCPDATAParameter().getValue());
+            Environment.setEnvironmentVariable(Constant.SOA_HOMEEnvVar, param.getCCPDATAParameter().getValue());
             Environment.setEnvironmentVariable(Constant.TASKINSTANCEIDEnvVar, param.getTaskinstanceIdParameter()
                     .getValue().toString());
             // use default values for following environment variables
@@ -200,7 +201,7 @@ public class Main {
 
         try {
             // try to get linux path first
-            String registryPath = Environment.getEnvironmentVariable(Constant.RegistryPathForLinuxEnv);
+            String registryPath = Environment.getEnvironmentVariable(Constant.SOA_HOMEEnvVar);
             if (registryPath == null) {
                 // otherwise get windows path
                 registryPath = Environment.getEnvironmentVariable(Constant.RegistryPathEnv);

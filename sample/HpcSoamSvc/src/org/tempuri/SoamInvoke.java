@@ -1,7 +1,6 @@
 package org.tempuri;
 
 import java.io.ByteArrayOutputStream;
-import static javax.management.Query.value;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -9,6 +8,7 @@ import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import com.microsoft.hpc.soam.Message;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
  * <p>
@@ -34,10 +34,12 @@ import com.microsoft.hpc.soam.Message;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "soamInput",})
+    "soamInput"
+})
 @XmlRootElement(name = "SoamInvoke")
-public class SoamInvoke {
+public class SoamInvoke{
 
+    @XmlJavaTypeAdapter(DummyAdapter.class)
     @XmlElementRef(name = "SoamInput", namespace = "http://tempuri.org/", type = JAXBElement.class, required = false)
     protected JAXBElement<byte[]> soamInput;
 
@@ -74,4 +76,5 @@ public class SoamInvoke {
             throw new RuntimeException(ex);
         }
     }
+
 }

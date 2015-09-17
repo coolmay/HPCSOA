@@ -193,6 +193,11 @@ public class Constant
     final public static String CCP_DATAEnvVar = "CCP_DATA";
 
     /**
+     * @field Folder Name for saving the necessary data
+     **/
+    final public static String SOA_HOMEEnvVar = "SOA_HOME";
+    
+    /**
      * File name for the service config file
      **/
     final public static String ServiceConfigFileNameEnvVar = "CCP_SERVICE_CONFIG_FILENAME";
@@ -264,7 +269,8 @@ public class Constant
     final public static String RegistryPathEnv = "CCP_SERVICEREGISTRATION_PATH";
 
     /**
-     * @field Store registry path environment
+     * @field Store registry path environment, use SOA_HOME instead
+     * @deprecated 
      **/
     final public static String RegistryPathForLinuxEnv = "CCP_SERVICEREGISTRATION_PATH_FOR_LINUX";
 
