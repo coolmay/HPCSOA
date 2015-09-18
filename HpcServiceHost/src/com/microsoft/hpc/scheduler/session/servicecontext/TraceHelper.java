@@ -79,7 +79,7 @@ public final class TraceHelper
     /**
      * @field mark of debug mode
      */
-    public static Boolean isDebug = true;
+    public static Boolean isDebug = false;
 
     private static String getDateTime()
     {

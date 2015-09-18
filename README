@@ -53,12 +53,13 @@ How to setup the system
 	1) On compute nodes, switch to SOA_HOME directory and edit SoamSvcLinux.config .
 	  ( SoamSvc.config if on Windows ).
 	2) In the section <microsoft.Hpc.Session.ServiceRegistration>, make sure all paths point to the correct locations.
+	  set ENABLE_BACKEND_SECURITY to "true" if you want to encrypt messages between broker and compute nodes.
 	3) Copy this config file to %CCP_HOME%\ServiceRegistration directory on your head node and broker nodes.
 	  ( The default path of %CCP_HOME% should be C:\Program Files\Microsoft HPC Pack 2012\ . )
-	4) Switch to SOA_HOME directory and run createcert.sh .
+	4) if you set ENABLE_BACKEND_SECURITY to "true" in step 2, switch to SOA_HOME directory again and run createcert.sh .
 	  ( createcert.bat if on Windows ).
 	5) The script will create certificate files ( keystore ) for encryption between compute nodes and broker nodes. 
-	6) Install the created "brokerkey.pfx" to Local Machine\Personal .
+	6) Install the created "brokerkey.pfx" and "brokertrust.cer" to Local Machine\Personal on your broker nodes.
 
 
 Add certificate for Java client  ( not necessary )

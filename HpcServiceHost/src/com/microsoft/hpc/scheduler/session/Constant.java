@@ -209,9 +209,14 @@ public class Constant
     final public static String EnableMessageLevelPreemptionEnvVar = "CCP_MESSAGE_LEVEL_PREEMPTION";
 
     /**
-     * @fieldEnvironment Variable to pass the localtion of the process
+     * @fieldEnvironment Variable to pass task instance id
      **/
     final public static String TASKINSTANCEIDEnvVar = "CCP_TASKINSTANCEID";
+
+    /**
+     * @fieldEnvironment Variable to pass whether to enable backend security
+     **/
+    final public static String EnableBackendSecurityEnvVar = "ENABLE_BACKEND_SECURITY";
 
     /**
      * @fieldDefault value for cancel task grace period. Same as node managers

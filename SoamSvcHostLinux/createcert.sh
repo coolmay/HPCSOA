@@ -3,8 +3,8 @@
 alias=hpcsoa
 keypass=!!!123abc
 storepass=${keypass}
-serverdname="CN=SOATEST-LN1"
-brokerdname="CN=SOATEST-HN"
+serverdname="CN=Microsoft HPC WSS Service"
+brokerdname="CN=Microsoft HPC WSS Client"
 
 serverkey="serverkey.jks"
 servertrust="servertrust.jks"

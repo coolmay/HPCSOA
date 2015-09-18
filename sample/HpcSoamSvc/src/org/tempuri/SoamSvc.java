@@ -26,10 +26,10 @@ import javax.xml.ws.Service;
                   targetNamespace = "http://tempuri.org/") 
 public class SoamSvc extends Service {
 
-    private final static URL WSDL_LOCATION;
+    public final static URL WSDL_LOCATION;
 
-    private final static QName SERVICE = new QName("http://tempuri.org/", "SoamSvc");
-    private final static QName DefaultBindingISoamSvc = new QName("http://tempuri.org/", "DefaultBinding_ISoamSvc");
+    public final static QName SERVICE = new QName("http://tempuri.org/", "SoamSvc");
+    public final static QName DefaultBindingISoamSvc = new QName("http://tempuri.org/", "DefaultBinding_ISoamSvc");
     
     static {
         URL url = null;

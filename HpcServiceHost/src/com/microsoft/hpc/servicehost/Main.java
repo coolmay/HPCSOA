@@ -130,9 +130,10 @@ public class Main {
             Environment.setEnvironmentVariable(Constant.ServiceConfigFileNameEnvVar, param.getFileNameParameter()
                     .getValue());
             Environment.setEnvironmentVariable(Constant.CCP_DATAEnvVar, param.getCCPDATAParameter().getValue());
-            Environment.setEnvironmentVariable(Constant.SOA_HOMEEnvVar, param.getCCPDATAParameter().getValue());
+            Environment.setEnvironmentVariable(Constant.SOA_HOMEEnvVar, param.getSoaHomeParameter().getValue());
             Environment.setEnvironmentVariable(Constant.TASKINSTANCEIDEnvVar, param.getTaskinstanceIdParameter()
                     .getValue().toString());
+            Environment.setEnvironmentVariable(Constant.EnableBackendSecurityEnvVar, param.getEnableSecurity().getValue());
             // use default values for following environment variables
             Environment.setEnvironmentVariable(Constant.ProcNumEnvVar, "1");
             Environment.setEnvironmentVariable(Constant.NetworkPrefixEnv, Constant.EnterpriseNetwork);

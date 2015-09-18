@@ -3,8 +3,8 @@
 SET alias=hpcsoa
 SET keypass=!!!123abc
 SET storepass=%keypass%
-SET serverdname="CN=SOATEST-LN1"
-SET brokerdname="CN=SOATEST-HN"
+SET serverdname="CN=Microsoft HPC WSS Service"
+SET brokerdname="CN=Microsoft HPC WSS Client"
 
 SET serverkey="serverkey.jks"
 SET servertrust="servertrust.jks"

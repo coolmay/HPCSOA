@@ -126,6 +126,7 @@ public class HpcServiceHostWrapper {
     private int jobId;
     private int taskId;
     private int procNum;
+    private boolean isEnableBackendSecurity = false;
 
     /**
      * @field CXF service retry Time out In MilliSecond
@@ -521,7 +522,9 @@ public class HpcServiceHostWrapper {
             }
 
             // add ws-security interceptors
-            addWSSHeaders(host);
+            if (this.isEnableBackendSecurity == true) {
+                addWSSHeaders(host);
+            }
 
             //enable the debug to stack trace in fault soap message
             host.getBus().setProperty("faultStackTraceEnabled", "true");
@@ -577,6 +580,10 @@ public class HpcServiceHostWrapper {
     private void addWSSHeaders(JaxWsServerFactoryBean fc) {
         final String WSSE_NS = "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd";
         final String WSU_NS = "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd";
+        final String SignVerifyPropFile = "sign.properties";
+        final String DecryptPropFile = "decrypt.properties";
+        final String SignPropFile = "decrypt.properties";
+        final String EncryptPropFile = "encrypt.properties";
 
         Map<String, Object> inProps = new HashMap<String, Object>();
         inProps.put(WSHandlerConstants.ACTION,
@@ -587,11 +594,11 @@ public class HpcServiceHostWrapper {
 //        inProps.put(WSHandlerConstants.USER, KeyStorePasswordCallbackHandler.USERNAME);
         inProps.put(WSHandlerConstants.PW_CALLBACK_CLASS, KeyStorePasswordCallbackHandler.class.getName());
 
-        inProps.put(WSHandlerConstants.SIG_PROP_FILE, "sign.properties");
+        inProps.put(WSHandlerConstants.SIG_PROP_FILE, SignVerifyPropFile);
 //        inProps.put(WSHandlerConstants.SIG_KEY_ID, "DirectReference");
 //        inProps.put(WSHandlerConstants.SIG_ALGO, "http://www.w3.org/2000/09/xmldsig#rsa-sha1");
 
-        inProps.put(WSHandlerConstants.DEC_PROP_FILE, "decrypt.properties");
+        inProps.put(WSHandlerConstants.DEC_PROP_FILE, DecryptPropFile);
 //        inProps.put(WSHandlerConstants.ENC_KEY_TRANSPORT, "http://www.w3.org/2001/04/xmlenc#rsa-oaep-mgf1p");
 
         WSS4JInInterceptor wssIn = new WSS4JInInterceptor(inProps);
@@ -610,14 +617,14 @@ public class HpcServiceHostWrapper {
         outProps.put(WSHandlerConstants.PW_CALLBACK_CLASS, KeyStorePasswordCallbackHandler.class.getName());
 
         outProps.put(WSHandlerConstants.SIGNATURE_USER, KeyStorePasswordCallbackHandler.USERNAME);
-        outProps.put(WSHandlerConstants.SIG_PROP_FILE, "decrypt.properties");
+        outProps.put(WSHandlerConstants.SIG_PROP_FILE, SignPropFile);
 //        outProps.put(WSHandlerConstants.SIG_KEY_ID, "DirectReference");
 //        outProps.put(WSHandlerConstants.SIG_ALGO, "http://www.w3.org/2000/09/xmldsig#rsa-sha1");
         outProps.put(WSHandlerConstants.SIGNATURE_PARTS, "{Element}{" + WSU_NS + "}Timestamp;"
                 + "{Element}{http://schemas.xmlsoap.org/soap/envelope/}Body");;
 
         outProps.put(WSHandlerConstants.ENCRYPTION_USER, KeyStorePasswordCallbackHandler.USERNAME);
-        outProps.put(WSHandlerConstants.ENC_PROP_FILE, "encrypt.properties");
+        outProps.put(WSHandlerConstants.ENC_PROP_FILE, EncryptPropFile);
 //        outProps.put(WSHandlerConstants.ENC_KEY_TRANSPORT, "http://www.w3.org/2001/04/xmlenc#rsa-oaep-mgf1p");
         outProps.put(WSHandlerConstants.ENCRYPTION_PARTS, "{Element}{http://www.w3.org/2000/09/xmldsig#}Signature;{Content}{http://schemas.xmlsoap.org/soap/envelope/}Body");
 
@@ -892,6 +899,18 @@ public class HpcServiceHostWrapper {
         ServiceContext.Logger.traceEvent(Level.INFO,
                 "[HpcServiceHost]: EnableMessageLevelPreemption = "
                 + enableMessageLevelPreemption);
+
+        // get the enable backend security value from the env var, the default
+        // value is false
+        String enableSecurity = Environment.getEnvironmentVariable(Constant.EnableBackendSecurityEnvVar);
+        try {
+            isEnableBackendSecurity = Boolean.parseBoolean(enableSecurity);
+        } catch (Exception e) {
+            isEnableBackendSecurity = false;
+        }
+        ServiceContext.Logger.traceEvent(Level.INFO,
+                "[HpcServiceHost]: EnableBackendSecurity = "
+                + isEnableBackendSecurity);
 
         return ErrorCode.Success;
     }
