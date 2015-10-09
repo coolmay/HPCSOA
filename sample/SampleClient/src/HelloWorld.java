@@ -9,6 +9,7 @@
 
 import org.tempuri.*;
 import com.microsoft.hpc.scheduler.session.*;
+import java.util.Random;
 import sample.common.*;
 
 public class HelloWorld {
@@ -26,7 +27,7 @@ public class HelloWorld {
             try {
                 nerrs += RunSoamTest();
                 //nerrs += RunBasicTest();
-                //nerrs += RunCommonDataTest();
+                nerrs += RunCommonDataTest();
                 //nerrs += RunResponseHandlerTest();
                 //nerrs += RunSoaTracingTest();
             } catch (Exception e) {
@@ -68,10 +69,8 @@ public class HelloWorld {
     private static int RunSoamTest() {
         int nerrs = 0;
         int nresponses = 0;
-        SessionStartInfo info = new SessionStartInfo(headnode, serviceName, username, password);
-//        Version ver = new Version(4, 4);
-//        SessionStartInfo info = new SessionStartInfo(headnode, serviceName, ver, username, password);
 
+        SessionStartInfo info = new SessionStartInfo(headnode, serviceName, username, password);
         System.out.printf("Creating a session for %s...\n", serviceName);
 
         try {
@@ -93,13 +92,69 @@ public class HelloWorld {
 
             System.out.println("Retrieving responses...");
 
-            
             for (BrokerResponse<SoamInvokeResponse> response : client.<SoamInvokeResponse>getResponses(SoamInvokeResponse.class)) {
-                nresponses ++;
+                nresponses++;
                 try {
                     MyOutput reply = new MyOutput();
                     response.getResult().getSoamOutputObject(reply);
                     System.out.printf("\tReceived response for request %s: %s%n", response.getUserData(), reply);
+                } catch (Exception ex) {
+                    nerrs++;
+                    System.out.printf("Error: process %s-th reuqest: %s%n", response.getUserData(), ex.toString());
+                }
+            }
+            System.out.printf("Done retrieving %d responses%n", nresponses);
+            client.close();
+            session.close();
+        } catch (Throwable e) {
+            nerrs++;
+            e.printStackTrace();
+        }
+        return nerrs;
+    }
+
+    private static int RunCommonDataTest() {
+        int nerrs = 0;
+        int nresponses = 0;
+
+        SessionStartInfo info = new SessionStartInfo(headnode, serviceName, username, password);
+        System.out.printf("Creating a session for %s...\n", serviceName);
+
+        try {
+            DurableSession session = DurableSession.createSession(info);
+            System.out.printf("new session id = %d\n", session.getId());
+
+            // Prepare 1k binary data
+            byte[] data = new byte[1024];
+            Random r = new Random();
+            r.nextBytes(data);
+
+            // Create common data client
+            String dataClientId = java.util.UUID.randomUUID().toString();
+            DataClient dataClient = DataClient.create(dataClientId, headnode, username, password);
+            System.out.printf("new common data client id = %s\n", dataClientId);
+            // Write data to Windows HPC Cluster
+            dataClient.writeRawBytesAll(data, true);
+
+            BrokerClient<SoamSvc> client = new BrokerClient<SoamSvc>(session, SoamSvc.class);
+            System.out.printf("Sending %d requests...\n", nrequests);
+            for (int i = 0; i < nrequests; i++) {
+                ObjectFactory of = new ObjectFactory();
+                SoamCommonData request = of.createSoamCommonData();
+                request.setDataClientId(of.createSoamCommonDataDataClientId(dataClientId));
+                client.sendRequest(request, i);
+                System.out.printf("Sent request %s: %s%n", i + 1, dataClientId);
+            }
+            System.out.println("call endRequests() ...");
+            client.endRequests();
+
+            System.out.println("Retrieving responses...");
+
+            for (BrokerResponse<SoamCommonDataResponse> response : client.<SoamCommonDataResponse>getResponses(SoamCommonDataResponse.class)) {
+                nresponses++;
+                try {
+                    int reply = response.getResult().getSoamCommonDataResult();
+                    System.out.printf("\tReceived response for request %s: %d%n", response.getUserData(), reply);
                 } catch (Exception ex) {
                     nerrs++;
                     System.out.printf("Error: process %s-th reuqest: %s%n", response.getUserData(), ex.toString());
@@ -127,7 +182,7 @@ public class HelloWorld {
 //            DurableSession session = DurableSession.createSession(info);
 //            System.out.printf("new session id = %d\n", session.getId());
 //
-//            BrokerClient<CcpEchoSvc> client = new BrokerClient<CcpEchoSvc>(session, CcpEchoSvc.class);
+//            BrokerClient<SoamSvc> client = new BrokerClient<SoamSvc>(session, SoamSvc.class);
 //            System.out.printf("Sending %d requests...\n", nrequests);
 //            for (int i = 0; i < nrequests; i++) {
 //                ObjectFactory of = new ObjectFactory();
@@ -161,59 +216,6 @@ public class HelloWorld {
 //        return nerrs;
 //    }
 //
-//    private static int RunCommonDataTest() {
-//        int nerrs = 0;
-//        SessionStartInfo info = new SessionStartInfo(headnode, serviceName, username, password);
-//        System.out.printf("Creating a session for %s...\n", serviceName);
-//
-//        try {
-//            DurableSession session = DurableSession.createSession(info);
-//            System.out.printf("new session id = %d\n", session.getId());
-//
-//            // Prepare 1k binary data
-//            byte[] data = new byte[1024];
-//            Random r = new Random();
-//            r.nextBytes(data);
-//
-//            // Create common data client
-//            String dataClientId = java.util.UUID.randomUUID().toString();
-//            DataClient dataClient = DataClient.create(dataClientId, headnode, username, password);
-//            System.out.printf("new common data client id = %s\n", dataClientId);
-//            // Write data to Windows HPC Cluster
-//            dataClient.writeRawBytesAll(data, true);
-//
-//            BrokerClient<CcpEchoSvc> client = new BrokerClient<CcpEchoSvc>(session, CcpEchoSvc.class);
-//            System.out.printf("Sending %d requests...\n", nrequests);
-//            for (int i = 0; i < nrequests; i++) {
-//                ObjectFactory of = new ObjectFactory();
-//                EchoData request = of.createEchoData();
-//                request.setDataClientId(of.createEchoDataDataClientId(dataClientId));
-//                client.sendRequest(request, i);
-//            }
-//            System.out.println("call endRequests() ...");
-//            client.endRequests();
-//
-//            System.out.println("Retrieving responses...");
-//
-//            for (BrokerResponse<EchoDataResponse> response : client.<EchoDataResponse>getResponses(EchoDataResponse.class)) {
-//                try {
-//                    int reply = response.getResult().getEchoDataResult();
-//                    System.out.printf("\tReceived response for request %s: %d%n", response.getUserData(), reply);
-//                } catch (Exception ex) {
-//                    nerrs++;
-//                    System.out.printf("Error: process %s-th reuqest: %s%n", response.getUserData(), ex.toString());
-//                }
-//            }
-//            System.out.printf("Done retrieving %d responses%n", nrequests);
-//            client.close();
-//            session.close();
-//        } catch (Throwable e) {
-//            nerrs++;
-//            e.printStackTrace();
-//        }
-//        return nerrs;
-//    }
-//
 //    private static int RunResponseHandlerTest() {
 //        int nerrs = 0;
 //        SessionStartInfo info = new SessionStartInfo(headnode, serviceName, username, password);
@@ -223,7 +225,7 @@ public class HelloWorld {
 //            final DurableSession session = DurableSession.createSession(info);
 //            System.out.printf("new session id = %d\n", session.getId());
 //
-//            BrokerClient<CcpEchoSvc> client = new BrokerClient<CcpEchoSvc>(session, CcpEchoSvc.class);
+//            BrokerClient<SoamSvc> client = new BrokerClient<SoamSvc>(session, SoamSvc.class);
 //
 //            client.setResponseHandler(EchoResponse.class,
 //                    new ResponseListener<EchoResponse>() {
@@ -293,7 +295,7 @@ public class HelloWorld {
 //            DurableSession session = DurableSession.createSession(info);
 //            System.out.printf("new session id = %d\n", session.getId());
 //
-//            BrokerClient<CcpEchoSvc> client = new BrokerClient<CcpEchoSvc>(session, CcpEchoSvc.class);
+//            BrokerClient<SoamSvc> client = new BrokerClient<SoamSvc>(session, SoamSvc.class);
 //            System.out.printf("Sending %d requests...\n", nrequests);
 //            for (int i = 0; i < nrequests; i++) {
 //                ObjectFactory of = new ObjectFactory();

@@ -51,13 +51,12 @@ public class ISoamSvcImpl implements ISoamSvc {
                 "Executing operation soamInvoke");
         try {
             byte[] soamOutput = null;
-            
+
             // Get soam service instance
             com.microsoft.hpc.soam.ServiceContainer service = SoamServiceLoader.getServiceInstance();
 
 //            // Call onCreateService
 //            service.onCreateService(serviceContext);
-
             // Call onSessionEnter
             com.microsoft.hpc.soam.SessionContext sessionContext = new com.microsoft.hpc.soam.SessionContext();
             service.onSessionEnter(sessionContext);
@@ -66,7 +65,7 @@ public class ISoamSvcImpl implements ISoamSvc {
             com.microsoft.hpc.soam.TaskContext taskContext = new com.microsoft.hpc.soam.TaskContext();
             taskContext.setInput(soamInput);
             taskContext.setUserData(getUserData());
-            ServiceContext.Logger.traceEvent(Level.INFO, "Before onInvoke : "+ soamInput.length);
+            ServiceContext.Logger.traceEvent(Level.INFO, "Before onInvoke : " + soamInput.length);
             service.onInvoke(taskContext);
             soamOutput = taskContext.getOutput();
             ServiceContext.Logger.traceEvent(Level.INFO, "After onInvoke : " + soamOutput.length);
@@ -76,7 +75,6 @@ public class ISoamSvcImpl implements ISoamSvc {
 
 //            // Call onDestoryService
 //            service.onDestroyService();
-
             // return 
             return soamOutput;
         } catch (java.lang.Exception ex) {
@@ -85,10 +83,30 @@ public class ISoamSvcImpl implements ISoamSvc {
         }
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tempuri.IEchoSvc#soamCommonData(java.lang.String dataClientId )*
+     */
+    public java.lang.Integer soamCommonData(java.lang.String dataClientId) {
+        ServiceContext.Logger.traceEvent(Level.INFO,
+                "Executing operation soamCommonData");
+        ServiceContext.Logger.traceEvent(Level.ALL, dataClientId);
+        try {
+            DataClient client = ServiceContext.getDataClient(dataClientId);
+            byte[] data = client.readRawBytesAll();
+            return data.length;
+        } catch (java.lang.Exception ex) {
+            ex.printStackTrace();
+            throw new RuntimeException(ex);
+        }
+    }
+
     private String getUserData() {
-        if(this.wsContext == null)
+        if (this.wsContext == null) {
             return "";
-        
+        }
+
         MessageContext mc = this.wsContext.getMessageContext();
         Message message = ((WrappedMessageContext) mc).getWrappedMessage();
         String userData = "";

@@ -27,4 +27,13 @@ public interface ISoamSvc {
             @WebParam(name = "SoamInput", targetNamespace = "http://tempuri.org/") byte[] soamInput
     );
 
+    @WebResult(name = "SoamCommonDataResult", targetNamespace = "http://tempuri.org/")
+    @Action(input = "http://tempuri.org/ISoamSvc/SoamCommonData", output = "http://tempuri.org/ISoamSvc/SoamCommonDataResponse")
+    @RequestWrapper(localName = "SoamCommonData", targetNamespace = "http://tempuri.org/", className = "org.tempuri.SoamCommonData")
+    @WebMethod(operationName = "SoamCommonData", action = "http://tempuri.org/ISoamSvc/SoamCommonData")
+    @ResponseWrapper(localName = "SoamCommonDataResponse", targetNamespace = "http://tempuri.org/", className = "org.tempuri.SoamCommonDataResponse")
+    public java.lang.Integer soamCommonData(
+            @WebParam(name = "DataClientId", targetNamespace = "http://tempuri.org/") java.lang.String dataClientId
+    );
+
 }

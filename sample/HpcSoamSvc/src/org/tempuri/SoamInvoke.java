@@ -39,7 +39,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 @XmlRootElement(name = "SoamInvoke")
 public class SoamInvoke{
 
-    @XmlJavaTypeAdapter(DummyAdapter.class)
+    @XmlJavaTypeAdapter(DummyAdapterBytes.class)
     @XmlElementRef(name = "SoamInput", namespace = "http://tempuri.org/", type = JAXBElement.class, required = false)
     protected JAXBElement<byte[]> soamInput;
 

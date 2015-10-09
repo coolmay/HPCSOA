@@ -19,5 +19,9 @@ if [ "$1" = "src" ] ; then
 fi
 
 if [ "$1" = "run" ] ; then
+	# set envs for soa common data test
+	export HPC_SOADATASERVER=\\\\SOATEST-HN\\Runtime$\\SOA
+	export HPC_SOADATASERVER_FOR_LINUX=/hpcruntime/SOA
+
 	"$JAVA_HOME/bin/java" -cp $CLASSPATH HelloWorld -Djavax.net.ssl.trustStore="$JAVA_HOME/jre/lib/security/cacerts" -Djavax.net.ssl.trustStorePassword=$Keystore_Password -Djava.endorsed.dirs="$CXF_HOME/lib/endorsed"
 fi

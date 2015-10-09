@@ -12,14 +12,15 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
  *
  * @author v-dafu
  */
-public class DummyAdapter extends XmlAdapter<JAXBElement<byte[]>, JAXBElement<byte[]>> {
+public class DummyAdapterString extends XmlAdapter<JAXBElement<String>, JAXBElement<String>> {
 
-    public JAXBElement<byte[]> unmarshal(JAXBElement<byte[]> val) throws Exception {
+    @Override
+    public JAXBElement<String> unmarshal(JAXBElement<String> val) throws Exception {
         return val;
     }
 
-    public JAXBElement<byte[]> marshal(JAXBElement<byte[]> val) throws Exception {
+    @Override
+    public JAXBElement<String> marshal(JAXBElement<String> val) throws Exception {
         return val;
     }
-
 }

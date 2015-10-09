@@ -7,62 +7,61 @@
 // </summary>
 //------------------------------------------------------------------------------
 /*
-JAVA INTEROP LIBRARY FOR WINDOWS HPC SERVER
+ JAVA INTEROP LIBRARY FOR WINDOWS HPC SERVER
 
-Copyright (c) Microsoft Corporation.  All rights reserved.
+ Copyright (c) Microsoft Corporation.  All rights reserved.
 
-This license governs use of the accompanying software. If you use the
-software, you accept this license. If you do not accept the license, do not
-use the software.
+ This license governs use of the accompanying software. If you use the
+ software, you accept this license. If you do not accept the license, do not
+ use the software.
 
-1. Definitions
-The terms "reproduce," "reproduction," "derivative works," and "distribution"
-have the same meaning here as under U.S. copyright law.
-A "contribution. is the original software, or any additions or changes to
-the software.
-A "contributor. is any person that distributes its contribution under this
-license.
-"Licensed patents. are a contributor.s patent claims that read directly on
-its contribution.
+ 1. Definitions
+ The terms "reproduce," "reproduction," "derivative works," and "distribution"
+ have the same meaning here as under U.S. copyright law.
+ A "contribution. is the original software, or any additions or changes to
+ the software.
+ A "contributor. is any person that distributes its contribution under this
+ license.
+ "Licensed patents. are a contributor.s patent claims that read directly on
+ its contribution.
 
-2. Grant of Rights
-(A) Copyright Grant- Subject to the terms of this license, including the
-license conditions and limitations in section 3, each contributor grants you
-a non-exclusive, worldwide, royalty-free copyright license to reproduce its
-contribution, prepare derivative works of its contribution, and distribute
-its contribution or any derivative works that you create.
-(B) Patent Grant- Subject to the terms of this license, including the license
-conditions and limitations in section 3, each contributor grants you a
-non-exclusive, worldwide, royalty-free license under its licensed patents to
-make, have made, use, sell, offer for sale, import, and/or otherwise dispose
-of its contribution in the software or derivative works of the contribution
-in the software.
+ 2. Grant of Rights
+ (A) Copyright Grant- Subject to the terms of this license, including the
+ license conditions and limitations in section 3, each contributor grants you
+ a non-exclusive, worldwide, royalty-free copyright license to reproduce its
+ contribution, prepare derivative works of its contribution, and distribute
+ its contribution or any derivative works that you create.
+ (B) Patent Grant- Subject to the terms of this license, including the license
+ conditions and limitations in section 3, each contributor grants you a
+ non-exclusive, worldwide, royalty-free license under its licensed patents to
+ make, have made, use, sell, offer for sale, import, and/or otherwise dispose
+ of its contribution in the software or derivative works of the contribution
+ in the software.
 
-3. Conditions and Limitations
-(A) No Trademark License- This license does not grant you rights to use any
-contributors' name, logo, or trademarks.
-(B) If you bring a patent claim against any contributor over patents that
-you claim are infringed by the software, your patent license from such
-contributor to the software ends automatically.
-(C) If you distribute any portion of the software, you must retain all
-copyright, patent, trademark, and attribution notices that are present in
-the software.
-(D) If you distribute any portion of the software in source code form,
-you may do so only under this license by including a complete copy of this
-license with your distribution. If you distribute any portion of the software
-in compiled or object code form, you may only do so under a license that
-complies with this license.
-(E) The software is licensed "as-is." You bear the risk of using it. The
-contributors give no express warranties, guarantees or conditions. You may
-have additional consumer rights under your local laws which this license
-cannot change. To the extent permitted under your local laws, the contributors
-exclude the implied warranties of merchantability, fitness for a particular
-purpose and non-infringement.
-(F) Platform Limitation- The licenses granted in sections 2(A) & 2(B) extend
-only to the software or derivative works that you create that operate with
-Windows HPC Server.
-*/
-
+ 3. Conditions and Limitations
+ (A) No Trademark License- This license does not grant you rights to use any
+ contributors' name, logo, or trademarks.
+ (B) If you bring a patent claim against any contributor over patents that
+ you claim are infringed by the software, your patent license from such
+ contributor to the software ends automatically.
+ (C) If you distribute any portion of the software, you must retain all
+ copyright, patent, trademark, and attribution notices that are present in
+ the software.
+ (D) If you distribute any portion of the software in source code form,
+ you may do so only under this license by including a complete copy of this
+ license with your distribution. If you distribute any portion of the software
+ in compiled or object code form, you may only do so under a license that
+ complies with this license.
+ (E) The software is licensed "as-is." You bear the risk of using it. The
+ contributors give no express warranties, guarantees or conditions. You may
+ have additional consumer rights under your local laws which this license
+ cannot change. To the extent permitted under your local laws, the contributors
+ exclude the implied warranties of merchantability, fitness for a particular
+ purpose and non-infringement.
+ (F) Platform Limitation- The licenses granted in sections 2(A) & 2(B) extend
+ only to the software or derivative works that you create that operate with
+ Windows HPC Server.
+ */
 package com.microsoft.hpc.scheduler.session;
 
 import java.io.File;
@@ -80,9 +79,10 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import com.microsoft.hpc.exceptions.DataErrorCode;
 import com.microsoft.hpc.exceptions.DataException;
+import com.microsoft.hpc.scheduler.session.servicecontext.Environment;
 
-public class DataClient
-{
+public class DataClient {
+
     static Pattern fileSharePathPattern = Pattern
             .compile("^\\\\\\\\(\\w[-\\w]*)(\\\\[^<>:\"\"/\\\\|?*]+)+$");
     static String localHostName = "localhost";
@@ -100,7 +100,7 @@ public class DataClient
 
     /**
      * Initialize a new instance of DataClient
-     * 
+     *
      * @param pathToData
      * @param readOnly
      * @param compress
@@ -118,12 +118,10 @@ public class DataClient
 
     /**
      * Write raw bytes in a byte array into the DataClient
-     * 
+     *
      * @param data
-     * @throws IllegalStateException
-     *             if the DataClient is opened for read
-     * @throws DataException
-     *             if there is any I/O error when writing the data
+     * @throws IllegalStateException if the DataClient is opened for read
+     * @throws DataException if there is any I/O error when writing the data
      */
     public void writeRawBytesAll(byte[] data) throws IllegalStateException,
             DataException {
@@ -132,29 +130,30 @@ public class DataClient
 
     /**
      * Write raw bytes in a byte array into the DataClient
-     * 
+     *
      * @param dataBytes
-     * @param compressible
-     *            a flag indicating whether the data is compressible or not
-     * @throws IllegalStateException
-     *             if the DataClient is opened for read
-     * @throws DataException
-     *             if there is any I/O error when writing the data
+     * @param compressible a flag indicating whether the data is compressible or
+     * not
+     * @throws IllegalStateException if the DataClient is opened for read
+     * @throws DataException if there is any I/O error when writing the data
      */
     public void writeRawBytesAll(byte[] dataBytes, boolean compressible)
             throws IllegalStateException, DataException {
         Utility.throwIfNull(dataBytes, "dataBytes");
-        if (dataBytes.length == 0)
+        if (dataBytes.length == 0) {
             throw new IllegalArgumentException(SR.v("ArgumentEmpty",
                     "dataBytes"));
-        if (readonly)
+        }
+        if (readonly) {
             throw new DataException(DataErrorCode.DataClientReadOnly.getCode(),
                     SR.v("DataClientReadOnly"));
+        }
 
-        if (!writable)
+        if (!writable) {
             throw new DataException(
                     DataErrorCode.DataClientNotWritable.getCode(), SR.v(
                             "DataClientNotWritable", this.id));
+        }
 
         File file = new File(pathToData);
         FileOutputStream originalStream = null;
@@ -175,11 +174,12 @@ public class DataClient
         } catch (FileNotFoundException e) {
             // FileNotFoundException may be thrown because of access denied.
             // so double check if file exists.
-            if (file.exists())
+            if (file.exists()) {
                 throw new AccessControlException(SR.v("DataNoPermission"));
-            else
+            } else {
                 throw new DataException(DataErrorCode.DataClientDeleted.getCode(),
-                    SR.v("DataClientDeleted", this.id), e);
+                        SR.v("DataClientDeleted", this.id), e);
+            }
         } catch (IOException e) {
             throw new DataException(DataErrorCode.UnknownIOError.getCode(),
                     SR.v("DataUnknownIOError"), e);
@@ -187,15 +187,17 @@ public class DataClient
             // to make sure "output" flushed data into "originalStream", make
             // sure output.close() is called before originalStream.close().
             try {
-                if (output != null)
+                if (output != null) {
                     output.close();
+                }
             } catch (IOException e) {
                 // ignore.
             }
 
             try {
-                if (originalStream != null)
+                if (originalStream != null) {
                     originalStream.close();
+                }
             } catch (IOException e) {
                 // ignore.
             }
@@ -204,7 +206,7 @@ public class DataClient
 
     /**
      * Get the path that refers to the underlying store of the data
-     * 
+     *
      * @return the path that refers to the underlying store of the data
      */
     public String getStorePath() {
@@ -213,7 +215,7 @@ public class DataClient
 
     /**
      * Read the data
-     * 
+     *
      * @return the data as a byte array
      */
     public byte[] readRawBytesAll() throws DataException {
@@ -304,15 +306,17 @@ public class DataClient
                     SR.v("DataUnknownIOError"), ioe);
         } finally {
             try {
-                if (originalStream != null)
+                if (originalStream != null) {
                     originalStream.close();
+                }
             } catch (IOException e) {
                 // ignore
             }
 
             try {
-                if (input != null)
+                if (input != null) {
                     input.close();
+                }
             } catch (IOException e) {
                 // ignore.
             }
@@ -328,19 +332,21 @@ public class DataClient
 
     /**
      * Associate with session
-     * 
+     *
      * @param sessionid
      * @throws SessionException
      */
     public void setDataLifeCycle(DataLifeCycle lifeCycle) throws DataException {
-        if (readonly)
+        if (readonly) {
             throw new DataException(DataErrorCode.DataClientReadOnly.getCode(),
                     SR.v("DataClientReadOnly"));
+        }
 
-        if (hasNamespace)
+        if (hasNamespace) {
             throw new DataException(
                     DataErrorCode.DataClientLifeCycleSet.getCode(), SR.v(
                             "DataClientLifeCycleSet", this.id));
+        }
 
         SessionBasedDataLifeCycleContext context = (SessionBasedDataLifeCycleContext) lifeCycle.context;
         CxfDataServiceClient client = new CxfDataServiceClient(this.username,
@@ -353,7 +359,7 @@ public class DataClient
 
     /**
      * Create a new instance of DataClient
-     * 
+     *
      * @param dataclientid
      * @param headnode
      * @param username
@@ -369,7 +375,7 @@ public class DataClient
 
     /**
      * Create a new instance of DataClient
-     * 
+     *
      * @param dataclientid
      * @param headnode
      * @param username
@@ -384,7 +390,7 @@ public class DataClient
 
     /**
      * Create a new instance of DataClient
-     * 
+     *
      * @param dataclientid
      * @param headnode
      * @param username
@@ -412,8 +418,8 @@ public class DataClient
 
             return new DataClient(dataPath, dataclientid, false, username,
                     password, headnode);
-        } catch(DataException ex) {
-            if(ex.getErrorCode() == DataErrorCode.DataNoPermission.getCode()) {
+        } catch (DataException ex) {
+            if (ex.getErrorCode() == DataErrorCode.DataNoPermission.getCode()) {
                 throw new AccessControlException(ex.getMessage());
             } else {
                 throw ex;
@@ -423,7 +429,7 @@ public class DataClient
 
     /**
      * Delete a data client
-     * 
+     *
      * @param dataclientid
      * @param headnode
      * @param username
@@ -446,8 +452,8 @@ public class DataClient
                     password, headnode);
             client.deleteDataClient(dataclientid);
             client.destory();
-        } catch(DataException ex) {
-            if(ex.getErrorCode() == DataErrorCode.DataNoPermission.getCode()) {
+        } catch (DataException ex) {
+            if (ex.getErrorCode() == DataErrorCode.DataNoPermission.getCode()) {
                 throw new AccessControlException(ex.getMessage());
             } else {
                 throw ex;
@@ -457,7 +463,7 @@ public class DataClient
 
     /**
      * Open a data client
-     * 
+     *
      * @param dataclientid
      * @param headnode
      * @param username
@@ -476,17 +482,16 @@ public class DataClient
         Utility.throwIfNullOrEmpty(username, "username");
         Utility.throwIfNull(password, "password");
 
-        try
-        {
+        try {
             CxfDataServiceClient client = new CxfDataServiceClient(username,
                     password, headnode);
             String dataPath = client.openDataClient(dataclientid);
             client.destory();
-            
+
             return new DataClient(dataPath, dataclientid, true, username, password,
                     headnode);
-        } catch(DataException ex) {
-            if(ex.getErrorCode() == DataErrorCode.DataNoPermission.getCode()) {
+        } catch (DataException ex) {
+            if (ex.getErrorCode() == DataErrorCode.DataNoPermission.getCode()) {
                 throw new AccessControlException(ex.getMessage());
             } else {
                 throw ex;
@@ -496,6 +501,7 @@ public class DataClient
 
     /**
      * Open a data client on specified data server(file share)
+     *
      * @param dataserveraddress File share root path
      * @param dataclientid data client id
      * @return Data
@@ -505,22 +511,21 @@ public class DataClient
             String dataclientid) throws DataException {
         ValidateFileSharePath(dataserveraddress);
         String storeFilePath = GenerateDataClientPath(dataserveraddress, dataclientid);
-        
+
         File file = new File(storeFilePath);
         if (!file.exists()) {
             throw new DataException(DataErrorCode.DataClientNotFound.getCode(),
                     SR.v("DataClientNotFound", dataclientid));
         }
-        
+
         return new DataClient(storeFilePath, dataclientid, true, null, null, null);
     }
-    
+
     /**
      * validate that file share path
-     * 
+     *
      * @param path
-     * @throws DataException
-     *             if path is not a valid file share path
+     * @throws DataException if path is not a valid file share path
      */
     private static void ValidateFileSharePath(String path) throws DataException {
         // File share path should be in the format of: \\server\share..., and
@@ -537,25 +542,26 @@ public class DataClient
                 DataErrorCode.DataServerMisconfigured.getCode(), SR.v(
                         "InvalidFileShareFormat", path));
     }
-    
+
     /**
      * generate store path for a data client
+     *
      * @param rootPath file share root path
      * @param dataClientId data client id
      * @return store path for the data client
      */
     private static String GenerateDataClientPath(String rootpath,
             String dataclientid) {
-        String path = rootpath + File.separator +
-        Integer.toString(getHashFromName(dataclientid)) + File.separator +
-        dataclientid;
-        
+        String path = rootpath + File.separator
+                + Integer.toString(getHashFromName(dataclientid)) + File.separator
+                + dataclientid;
+
         return ConvertPath(path);
     }
 
     /**
      * get the hash code from the key
-     * 
+     *
      * @param name
      * @return
      */
@@ -573,7 +579,7 @@ public class DataClient
 
     /**
      * convert an integer to 4 bytes
-     * 
+     *
      * @param i
      * @return 4-byte representation of the integer
      */
@@ -587,39 +593,47 @@ public class DataClient
 
     /**
      * convert a 4-byte array into an integer
-     * 
+     *
      * @param bytes
      * @return integer value of the 4 bytes
      */
     private static int ToInt(byte[] bytes) {
         int ret = 0;
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < 4; i++) {
             ret = (ret << 8) | (bytes[3 - i] & 0xff);
+        }
         return ret;
     }
-    
-    private static String ConvertPath(String original)
-    {
-        if (System.getProperty("os.name").toLowerCase().indexOf("win") != -1)
+
+    private static String ConvertPath(String original) {
+        if (System.getProperty("os.name").toLowerCase().contains("win")) {
             return original;
-        else
-        {
+        } else {
             // fetch the environment variable
-            String runtimeShare = System.getenv("HPC_RUNTIMESHARE");
-            
-            if (runtimeShare == null)
-                return original;
-            
-            int firstSlash = original.indexOf('\\', 3);
-            int secondSlash = original.indexOf('\\', firstSlash + 1);
-            
-            if (secondSlash == -1)
-            {
+//            String runtimeShare = System.getenv("HPC_RUNTIMESHARE");
+            String strDataServerInfo = Environment
+                    .getEnvironmentVariable(Constant.SoaDataServerInfoEnvVar);
+            String strDataServerInfoForLinux = Environment
+                    .getEnvironmentVariable(Constant.SoaDataServerInfoForLinuxEnvVar);
+
+            if (strDataServerInfo == null || strDataServerInfoForLinux == null) {
                 return original;
             }
+
+//            int firstSlash = original.indexOf('\\', 3);
+//            int secondSlash = original.indexOf('\\', firstSlash + 1);
+//            
+//            if (secondSlash == -1)
+//            {
+//                return original;
+//            }
+//            String result = runtimeShare + original.substring(secondSlash);
             
-            String result = runtimeShare + original.substring(secondSlash);
-            return result.replace('\\', '/');
+            String result = original;
+            result = result.replace(strDataServerInfo, strDataServerInfoForLinux);
+            result = result.replace('\\', '/');
+
+            return result;
         }
     }
 }

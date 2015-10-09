@@ -21,6 +21,7 @@ public class ObjectFactory {
 
     private final static QName _SoamInvokeSoamInput_QNAME = new QName("http://tempuri.org/", "SoamInput");
     private final static QName _SoamInvokeResponseSoamOutput_QNAME = new QName("http://tempuri.org/", "SoamOutput");
+    private final static QName _SoamCommonDataDataClientId_QNAME = new QName("http://tempuri.org/", "DataClientId");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of
@@ -33,7 +34,7 @@ public class ObjectFactory {
     /**
      * Create an instance of {@link SoamInvokeResponse }
      *
-     * @return 
+     * @return
      */
     public SoamInvokeResponse createSoamInvokeResponse() {
         return new SoamInvokeResponse();
@@ -42,10 +43,18 @@ public class ObjectFactory {
     /**
      * Create an instance of {@link SoamInvoke }
      *
-     * @return 
+     * @return
      */
     public SoamInvoke createSoamInvoke() {
         return new SoamInvoke();
+    }
+
+    /**
+     * Create an instance of {@link SoamCommonData }
+     *
+     */
+    public SoamCommonData createSoamCommonData() {
+        return new SoamCommonData();
     }
 
     /**
@@ -53,7 +62,7 @@ public class ObjectFactory {
      * {@link JAXBElement }{@code <}{@link byte[]}{@code >}}
      *
      * @param value
-     * @return 
+     * @return
      */
     @XmlElementDecl(namespace = "http://tempuri.org/", name = "SoamInput", scope = SoamInvoke.class)
     public JAXBElement<byte[]> createSoamInvokeSoamInput(byte[] value) {
@@ -65,11 +74,21 @@ public class ObjectFactory {
      * {@link JAXBElement }{@code <}{@link byte[]}{@code >}}
      *
      * @param value
-     * @return 
+     * @return
      */
     @XmlElementDecl(namespace = "http://tempuri.org/", name = "SoamOutput", scope = SoamInvokeResponse.class)
     public JAXBElement<byte[]> createSoamInvokeResponseSoamOutput(byte[] value) {
         return new JAXBElement<byte[]>(_SoamInvokeResponseSoamOutput_QNAME, byte[].class, SoamInvokeResponse.class, ((byte[]) value));
+    }
+
+    /**
+     * Create an instance of
+     * {@link JAXBElement }{@code <}{@link String }{@code >}}
+     *
+     */
+    @XmlElementDecl(namespace = "http://tempuri.org/", name = "DataClientId", scope = SoamCommonData.class)
+    public JAXBElement<String> createSoamCommonDataDataClientId(String value) {
+        return new JAXBElement<String>(_SoamCommonDataDataClientId_QNAME, String.class, SoamCommonData.class, value);
     }
 
 }
