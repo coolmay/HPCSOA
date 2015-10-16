@@ -120,7 +120,7 @@ public class MyOutput extends Message {
     }
 
     private static ObjectMapper mapper = new ObjectMapper();
-    
+
     static {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         mapper.setDateFormat(dateFormat);
@@ -145,14 +145,10 @@ public class MyOutput extends Message {
     private byte[] m_bytes = {0x11, 0x22, 0x33, 0x44};
     @JsonProperty("m_date")
     private Date m_date = new Date();
-    
+
     @Override
     public void onDeserialize(InputStream stream) throws SoamException {
         try {
-//            ObjectInputStream ois = new ObjectInputStream(stream);
-//            MyOutput my = (MyOutput) ois.readObject();
-//            ois.close();
-
             ByteArrayOutputStream outStream = new ByteArrayOutputStream();
             byte[] data = new byte[4096];
             int count = -1;
@@ -162,7 +158,7 @@ public class MyOutput extends Message {
             data = null;
             String json = new String(outStream.toByteArray(), "ISO-8859-1");
             MyOutput my = MyOutput.fromJson(json);
-            
+
             this.m_boolean = my.isBoolean();
             this.m_int = my.getInt();
             this.m_long = my.getLong();
@@ -175,26 +171,21 @@ public class MyOutput extends Message {
             throw new SoamException(ex);
         }
     }
-    
+
     @Override
     public void onSerialize(OutputStream stream) throws SoamException {
         try {
-//            ObjectOutputStream oos = new ObjectOutputStream(stream);
-//            oos.writeObject(this);
-//            oos.flush();
-//            oos.close();
-
             String json = this.toJson();
             stream.write(json.getBytes());
         } catch (Exception ex) {
             throw new SoamException(ex);
         }
     }
-    
+
     public String toJson() throws JsonGenerationException, JsonMappingException, IOException {
         return mapper.writeValueAsString(this);
     }
-    
+
     public static MyOutput fromJson(String json) throws JsonParseException, JsonMappingException, IOException {
         if (json == null) {
             return null;
@@ -202,5 +193,5 @@ public class MyOutput extends Message {
             return mapper.readValue(json, MyOutput.class);
         }
     }
-    
+
 }

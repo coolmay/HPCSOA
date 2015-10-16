@@ -103,7 +103,7 @@ class CxfBrokerControllerClient extends CxfClientBase {
 
         QName serviceName = new QName("http://hpc.microsoft.com/brokercontroller/", "BrokerController");
         AddressingFeature feature = new AddressingFeature();
-        javax.xml.ws.Service soaService = Service.create(serviceName, feature);
+        javax.xml.ws.Service soaService = Service.create(serviceName);  //feature);
         soaService.addPort(portName, SOAPBinding.SOAP11HTTP_BINDING, this.epr);
 
         brokerController = soaService.getPort(portName, IBrokerController.class);

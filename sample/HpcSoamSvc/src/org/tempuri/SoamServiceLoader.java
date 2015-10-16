@@ -64,6 +64,7 @@
  */
 package org.tempuri;
 
+import com.microsoft.hpc.scheduler.session.Constant;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -94,15 +95,6 @@ public class SoamServiceLoader extends ClassLoader {
     private final String expression = ".*\\.class$";
 
     /**
-     * @field HPC_SOAM_SERVICE_ASSEMBLY
-     */
-    private final static String SoamServiceAssembly = "HPC_SOAM_SERVICE_ASSEMBLY";
-
-    private final static String SoamServiceName = "HPC_SOAM_SERVICE_NAME";
-
-    private static ServiceContainer service = null;
-
-    /**
      * Construct
      *
      * @throws IOException
@@ -111,58 +103,63 @@ public class SoamServiceLoader extends ClassLoader {
         this.file = new JarFile(jarFilePath);
     }
 
+    public static com.microsoft.hpc.soam.ServiceContext getServiceConstext() {
+
+        return new com.microsoft.hpc.soam.ServiceContext();
+    }
+
+    public static com.microsoft.hpc.soam.SessionContext getSessionConstext() {
+
+        return new com.microsoft.hpc.soam.SessionContext();
+    }
+
     public static ServiceContainer getServiceInstance() throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException, SoamException {
-        if (service == null) {
-            // get jar file path from env
-            String jarFilePath = Environment.getEnvironmentVariable(SoamServiceAssembly);
-            if (jarFilePath == null || jarFilePath.isEmpty()) {
-                throw new IOException("The Soam service assembly is not specified.");
-            }
-            ServiceContext.Logger.traceEvent(Level.INFO, "The Soam service assembly is " + jarFilePath);
+        // get jar file path from env
+        String jarFilePath = Environment.getEnvironmentVariable(Constant.SoamServiceAssemblyEnvVar);
+        if (jarFilePath == null || jarFilePath.isEmpty()) {
+            throw new IOException("The Soam service assembly is not specified.");
+        }
+        ServiceContext.Logger.traceEvent(Level.INFO, "The Soam service assembly is " + jarFilePath);
 
-            // get service name from env
-            String serviceName = Environment.getEnvironmentVariable(SoamServiceName);
-            if (serviceName == null || serviceName.isEmpty()) {
-                ServiceContext.Logger.traceEvent(Level.INFO, "The Soam service name is not specified.");
-            } else {
-                ServiceContext.Logger.traceEvent(Level.INFO, "The Soam service name is " + serviceName);
-            }
-
-            return getServiceInstance(jarFilePath, serviceName);
+        // get service name from env
+        String serviceName = Environment.getEnvironmentVariable(Constant.SoamServiceNameEnvVar);
+        if (serviceName == null || serviceName.isEmpty()) {
+            ServiceContext.Logger.traceEvent(Level.INFO, "The Soam service name is not specified.");
+        } else {
+            ServiceContext.Logger.traceEvent(Level.INFO, "The Soam service name is " + serviceName);
         }
 
-        return service;
+        return getServiceInstance(jarFilePath, serviceName);
     }
 
     public static ServiceContainer getServiceInstance(String jarFilePath, String serviceName) throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException, SoamException {
-        if (service == null) {
-            if (jarFilePath == null || jarFilePath.isEmpty()) {
-                ServiceContext.Logger.traceEvent(Level.INFO, "The Soam service assembly is not specified.");
-                throw new IOException("The Soam service assembly is not specified.");
-            }
-            SoamServiceLoader loader = new SoamServiceLoader(jarFilePath);
+        if (jarFilePath == null || jarFilePath.isEmpty()) {
+            ServiceContext.Logger.traceEvent(Level.INFO, "The Soam service assembly is not specified.");
+            throw new IOException("The Soam service assembly is not specified.");
+        }
+        
+        SoamServiceLoader loader = new SoamServiceLoader(jarFilePath);
+        Class<?> serviceClass = null;
 
-            Class<?> serviceClass = null;
-            if (serviceName == null || serviceName.isEmpty()) {
-                serviceClass = loader.findClass();
-            } else {
-                serviceClass = loader.findClass(serviceName);
-            }
-
-            if (serviceClass != null) {
-                service = (ServiceContainer) serviceClass.newInstance();
-                
-                com.microsoft.hpc.soam.ServiceContext serviceContext = new com.microsoft.hpc.soam.ServiceContext();
-                service.onCreateService(serviceContext);
-            }
+        if (serviceName == null || serviceName.isEmpty()) {
+            serviceClass = loader.findClass();
+        } else {
+            serviceClass = loader.findClass(serviceName);
         }
 
-        return service;
+        if (serviceClass != null) {
+            return (ServiceContainer) serviceClass.newInstance();
+        }
+
+        return null;
     }
 
     /**
      * (non-Javadoc)
      *
+     * @param className
+     * @return
+     * @throws java.lang.ClassNotFoundException
      * @see java.lang.ClassLoader#findClass(java.lang.String)
      */
     @Override
@@ -232,7 +229,7 @@ public class SoamServiceLoader extends ClassLoader {
 
     /**
      * @description find the class from jar by the specific class name
-     * @param serviceContractName specific class name
+     * @param interfaceName
      * @return target class
      * @throws ClassNotFoundException
      */
@@ -248,7 +245,7 @@ public class SoamServiceLoader extends ClassLoader {
                     Class<?> tempClass = findClass(name);
 
                     for (Class<?> interfaceClass : tempClass.getInterfaces()) {
-                        if (interfaceClass.getName() == interfaceName) {
+                        if (interfaceClass.getName().equals(interfaceName)) {
                             a = tempClass;
                             break;
                         }
@@ -266,6 +263,7 @@ public class SoamServiceLoader extends ClassLoader {
     /**
      * (non-Javadoc)
      *
+     * @return
      * @see java.lang.ClassLoader#findResource(java.lang.String)
      */
     @Override
@@ -286,6 +284,7 @@ public class SoamServiceLoader extends ClassLoader {
     /**
      * (non-Javadoc)
      *
+     * @return
      * @see java.lang.ClassLoader#findResources(java.lang.String)
      */
     @Override
@@ -293,15 +292,17 @@ public class SoamServiceLoader extends ClassLoader {
         return new Enumeration<URL>() {
             private URL element = findResource(name);
 
+            @Override
             public boolean hasMoreElements() {
                 return this.element != null;
             }
 
+            @Override
             public URL nextElement() {
                 if (this.element != null) {
-                    URL element = this.element;
+                    URL e = this.element;
                     this.element = null;
-                    return element;
+                    return e;
                 }
                 throw new NoSuchElementException();
             }

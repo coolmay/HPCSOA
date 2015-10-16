@@ -4,15 +4,15 @@ Introduction
 	This is the Java library providing interop capability with the SOA feature
 	on Windows HPC cluster. 
 
-	HpcServiceHost\	-	host service and session contract. output : Microsoft-HpcServiceHost-3.0.jar and Microsoft-HpcSession-3.0.jar
+	HpcServiceHost\	-	hpc host service and session contract. output : Microsoft-HpcServiceHost-3.0.jar and Microsoft-HpcSession-3.0.jar
 	sample\
 	  |-  HpcSoam\		-	common interfaces and classes for hpc soam service. output : HpcSoam.jar
-	  |-  HpcSoamSvc\	-	hpc soam service. output : HpcSoamSvc.jar
-	  |-  SampleService\	-	sample soam program. output : SampleService.jar
-	  |-  SampleClient\	-	sample Java client for sample soam program. output : HelloWorld.class
-	  |-  CSharpClient\	-	sample C# client for sample soam program. output : SampleClientSoam.exe
-	SoamSvcHost		-	%SOA_HOME% for running sample soam program on Windows
-	SoamSvcHostLinux	-	${SOA_HOME} for running sample soam program on Linux
+	  |-  HpcSoamSvc\	-	hpc soam host service. output : HpcSoamSvc.jar
+	  |-  SampleService\	-	sample soam service program. output : SampleService.jar
+	  |-  SampleClient\	-	sample Java client for sample soam service program. output : HelloWorld.class
+	  |-  CSharpClient\	-	sample C# client for sample soam service program. output : SampleClientSoam.exe
+	SoamSvcHost		-	%SOA_HOME% for running sample soam service program on Windows
+	SoamSvcHostLinux	-	${SOA_HOME} for running sample soam service program on Linux
 
 
 Prerequisites

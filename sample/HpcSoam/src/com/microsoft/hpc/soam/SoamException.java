@@ -11,11 +11,35 @@ package com.microsoft.hpc.soam;
  */
 public class SoamException extends Exception {
 
-    public SoamException(Exception ex) {
-        super(ex);
+    private int ErrorCode = 0;
+    private String ErrorType = "SoamException";
+
+    public SoamException() {
+        super();
     }
-    
+
     public SoamException(String message) {
         super(message);
+    }
+
+    public SoamException(String message, int errorCode) {
+        super(message);
+        ErrorCode = errorCode;
+    }
+
+    public SoamException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public SoamException(Throwable cause) {
+        super(cause);
+    }
+    
+    public int getErrorCode(){
+        return ErrorCode;
+    }
+    
+    public String getErrorType(){
+        return ErrorType;
     }
 }

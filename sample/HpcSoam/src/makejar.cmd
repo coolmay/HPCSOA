@@ -4,7 +4,7 @@ setlocal
 set JAVA_HOME=%ProgramFiles%\Java\jdk1.8.0_60
 set CXF_HOME=c:\java\apache-cxf-2.7.17
 set SOA_HOME=D:\HPCSOA\SoamSvcHost
-set CLASSPATH=.
+set CLASSPATH=.;%SOA_HOME%\Microsoft-HpcSession-3.0.jar;
 set JAVAC="%JAVA_HOME%\bin\javac.exe"
 
 

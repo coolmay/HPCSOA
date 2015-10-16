@@ -229,8 +229,7 @@ class CxfBrokerClient<TContract extends Service> extends CxfClientBase {
         } else {
             TraceHelper.traceInformation("create a dispatch for " + action);
             Dispatch<SOAPMessage> dispatch = soaService.createDispatch(
-                    portName, SOAPMessage.class, Service.Mode.MESSAGE,
-                    new AddressingFeature(true));
+                    portName, SOAPMessage.class, Service.Mode.MESSAGE); //new AddressingFeature(true));
             DispatchImpl<SOAPMessage> dispImpl = (DispatchImpl<SOAPMessage>) dispatch;
             trustAll((HTTPConduit) dispImpl.getClient().getConduit());
             addWSSHeaders(dispImpl.getClient().getEndpoint());

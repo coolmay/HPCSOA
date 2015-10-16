@@ -18,14 +18,14 @@ public class HelloWorld {
     public static String password = "!!123abc";  // valid user password 
     private static String headnode = "SOATest-HN"; // HPC cluster headnode hostname
     private static String serviceName = "SoamSvcLinux";
-    private static int nrequests = 5;
+    private static int nrequests = 100000;
 
     public static void main(String[] args) {
         int nerrs = 0;
         nerrs += ParseCmdLine(args);
         if (nerrs == 0) {
             try {
-                nerrs += RunSoamTest();
+                //nerrs += RunSoamTest();
                 //nerrs += RunBasicTest();
                 nerrs += RunCommonDataTest();
                 //nerrs += RunResponseHandlerTest();
@@ -74,21 +74,41 @@ public class HelloWorld {
         System.out.printf("Creating a session for %s...\n", serviceName);
 
         try {
-            DurableSession session = DurableSession.createSession(info);
+            // Prepare 1k binary data
+            byte[] data = new byte[1024];
+            Random r = new Random();
+            r.nextBytes(data);
+
+            // Create common data client
+            String dataClientId = java.util.UUID.randomUUID().toString();
+            DataClient dataClient = DataClient.create(dataClientId, headnode, username, password);
+            System.out.printf("new common data client id = %s\n", dataClientId);
+            // Write data to Windows HPC Cluster
+            dataClient.writeRawBytesAll(data, true);
+
+            // pass data client id to session
+            info.setCommonDataClientId(dataClientId);
+
+            Session session = Session.createSession(info);
             System.out.printf("new session id = %d\n", session.getId());
 
             BrokerClient<SoamSvc> client = new BrokerClient<SoamSvc>(session, SoamSvc.class);
             System.out.printf("Sending %d requests...\n", nrequests);
+            long timeMark1 = System.nanoTime();
+
             for (int i = 0; i < nrequests; i++) {
                 MyInput input = new MyInput();
                 ObjectFactory of = new ObjectFactory();
                 SoamInvoke request = of.createSoamInvoke();
                 request.setSoamInputObject(input);
                 client.sendRequest(request, i + 1);
-                System.out.printf("Sent request %s: %s%n", i + 1, input);
+//                System.out.printf("Sent request %s: %s%n", i + 1, input);
             }
-            System.out.println("call endRequests() ...");
             client.endRequests();
+
+            long timeMark2 = System.nanoTime();
+            double elapsedTimeSec = (timeMark2 - timeMark1) / 1000000000.0;
+            System.out.println("Done calling endRequests() ...throughput=" + (nrequests / elapsedTimeSec));
 
             System.out.println("Retrieving responses...");
 
@@ -97,13 +117,20 @@ public class HelloWorld {
                 try {
                     MyOutput reply = new MyOutput();
                     response.getResult().getSoamOutputObject(reply);
-                    System.out.printf("\tReceived response for request %s: %s%n", response.getUserData(), reply);
+//                    System.out.printf("\tReceived response for request %s: %s%n", response.getUserData(), reply);
                 } catch (Exception ex) {
                     nerrs++;
                     System.out.printf("Error: process %s-th reuqest: %s%n", response.getUserData(), ex.toString());
                 }
             }
-            System.out.printf("Done retrieving %d responses%n", nresponses);
+
+            long timeMark3 = System.nanoTime();
+            elapsedTimeSec = (timeMark3 - timeMark2) / 1000000000.0;
+            System.out.printf("Done retrieving %d responses ... throughput=%f %n", nresponses, (nresponses / elapsedTimeSec));
+
+            elapsedTimeSec = (timeMark3 - timeMark1) / 1000000000.0;
+            System.out.printf("total throughput=%f %n", (nresponses / elapsedTimeSec));
+
             client.close();
             session.close();
         } catch (Throwable e) {
@@ -121,11 +148,8 @@ public class HelloWorld {
         System.out.printf("Creating a session for %s...\n", serviceName);
 
         try {
-            DurableSession session = DurableSession.createSession(info);
-            System.out.printf("new session id = %d\n", session.getId());
-
-            // Prepare 1k binary data
-            byte[] data = new byte[1024];
+            // Prepare 500m binary data
+            byte[] data = new byte[500 * 1024 * 1024];
             Random r = new Random();
             r.nextBytes(data);
 
@@ -136,17 +160,28 @@ public class HelloWorld {
             // Write data to Windows HPC Cluster
             dataClient.writeRawBytesAll(data, true);
 
+            // pass data client id to session
+            info.setCommonDataClientId(dataClientId);
+
+            Session session = Session.createSession(info);
+            System.out.printf("new session id = %d\n", session.getId());
+
             BrokerClient<SoamSvc> client = new BrokerClient<SoamSvc>(session, SoamSvc.class);
             System.out.printf("Sending %d requests...\n", nrequests);
+            long timeMark1 = System.nanoTime();
+
             for (int i = 0; i < nrequests; i++) {
                 ObjectFactory of = new ObjectFactory();
                 SoamCommonData request = of.createSoamCommonData();
                 request.setDataClientId(of.createSoamCommonDataDataClientId(dataClientId));
                 client.sendRequest(request, i);
-                System.out.printf("Sent request %s: %s%n", i + 1, dataClientId);
+//                System.out.printf("Sent request %s: %s%n", i + 1, dataClientId);
             }
-            System.out.println("call endRequests() ...");
             client.endRequests();
+
+            long timeMark2 = System.nanoTime();
+            double elapsedTimeSec = (timeMark2 - timeMark1) / 1000000000.0;
+            System.out.println("Done calling endRequests() ...throughput=" + (nrequests / elapsedTimeSec));
 
             System.out.println("Retrieving responses...");
 
@@ -154,13 +189,20 @@ public class HelloWorld {
                 nresponses++;
                 try {
                     int reply = response.getResult().getSoamCommonDataResult();
-                    System.out.printf("\tReceived response for request %s: %d%n", response.getUserData(), reply);
+//                    System.out.printf("\tReceived response for request %s: %d%n", response.getUserData(), reply);
                 } catch (Exception ex) {
                     nerrs++;
                     System.out.printf("Error: process %s-th reuqest: %s%n", response.getUserData(), ex.toString());
                 }
             }
-            System.out.printf("Done retrieving %d responses%n", nresponses);
+            
+            long timeMark3 = System.nanoTime();
+            elapsedTimeSec = (timeMark3 - timeMark2) / 1000000000.0;
+            System.out.printf("Done retrieving %d responses ... throughput=%f %n", nresponses, (nresponses / elapsedTimeSec));
+
+            elapsedTimeSec = (timeMark3 - timeMark1) / 1000000000.0;
+            System.out.printf("total throughput=%f %n", (nresponses / elapsedTimeSec));
+
             client.close();
             session.close();
         } catch (Throwable e) {

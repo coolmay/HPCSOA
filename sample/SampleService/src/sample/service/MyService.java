@@ -13,6 +13,9 @@ import sample.common.*;
 
 public class MyService extends ServiceContainer {
 
+    private ServiceContext m_serviceContext = null;
+    private SessionContext m_sessionContext = null;
+
     /**
      *
      */
@@ -27,6 +30,7 @@ public class MyService extends ServiceContainer {
          * Do your service initialization here.
          * ******************************************************************
          */
+        m_serviceContext = serviceContext;
     }
 
     @Override
@@ -37,6 +41,7 @@ public class MyService extends ServiceContainer {
          * provided.
          * ******************************************************************
          */
+        m_sessionContext = sessionContext;
     }
 
     @Override
@@ -50,24 +55,29 @@ public class MyService extends ServiceContainer {
 
         // Get the input that was sent from the client 
         try {
+            byte[] commonData = m_sessionContext.getCommonData();
+            int factor = 10;
+            if (commonData != null) {
+                factor = commonData.length;
+            }
+
             MyInput myInput = new MyInput();
             taskContext.populateTaskInput(myInput);
 
             // Set the output
             MyOutput myOutput = new MyOutput();
             myOutput.setBoolean(!myInput.isBoolean());
-            myOutput.setInt(myInput.getInt() * 10);
-            myOutput.setFloat(myInput.getFloat() * 10);
-            myOutput.setDouble(myInput.getDouble() * 10);
-            myOutput.setLong(myInput.getLong() * 10);
-            myOutput.setString(myInput.getString().toUpperCase());
-            myOutput.setBytes(myOutput.getString().getBytes());
+            myOutput.setInt(myInput.getInt() * factor);
+            myOutput.setFloat(myInput.getFloat() * factor);
+            myOutput.setDouble(myInput.getDouble() * factor);
+            myOutput.setLong(myInput.getLong() * factor);
+            myOutput.setString(m_serviceContext.getServiceName() + " returned: " + myInput.getString().toUpperCase());
+            myOutput.setBytes(commonData);
             myOutput.setDate(new Date());
 
             // Set our output message 
             taskContext.setTaskOutput(myOutput);
         } catch (Exception ex) {
-            ex.printStackTrace();
             throw new SoamException(ex);
         }
     }

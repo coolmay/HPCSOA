@@ -36,70 +36,70 @@ public class MyInput extends Message {
     public boolean isBoolean() {
         return m_boolean;
     }
-    
+
     public void setBoolean(boolean m_boolean) {
         this.m_boolean = m_boolean;
     }
-    
+
     public int getInt() {
         return m_int;
     }
-    
+
     public void setInt(int m_int) {
         this.m_int = m_int;
     }
-    
+
     public long getLong() {
         return m_long;
     }
-    
+
     public void setLong(long m_long) {
         this.m_long = m_long;
     }
-    
+
     public float getFloat() {
         return m_float;
     }
-    
+
     public void setFloat(float m_float) {
         this.m_float = m_float;
     }
-    
+
     public double getDouble() {
         return m_double;
     }
-    
+
     public void setDouble(double m_double) {
         this.m_double = m_double;
     }
-    
+
     public String getString() {
         return m_string;
     }
-    
+
     public void setString(String m_string) {
         this.m_string = m_string;
     }
-    
+
     public byte[] getBytes() {
         return m_bytes;
     }
-    
+
     public void setBytes(byte[] m_bytes) {
         this.m_bytes = m_bytes;
     }
-    
+
     public Date getDate() {
         return m_date;
     }
-    
+
     public void setDate(Date m_date) {
         this.m_date = m_date;
     }
-    
+
     @Override
     public String toString() {
-        
+
         StringBuilder sb = new StringBuilder();
         sb.append("bool = ").append(this.m_boolean).append(", ");
         sb.append("int = ").append(this.m_int).append(", ");
@@ -113,12 +113,12 @@ public class MyInput extends Message {
         }
         sb.append(", ");
         sb.append("date = ").append(this.m_date.toString()).append(", ");
-        
+
         return sb.toString();
     }
-    
+
     private static final ObjectMapper mapper = new ObjectMapper();
-    
+
     static {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         mapper.setDateFormat(dateFormat);
@@ -143,14 +143,10 @@ public class MyInput extends Message {
     private byte[] m_bytes = {0x11, 0x22, 0x33, 0x44};
     @JsonProperty("m_date")
     private Date m_date = new Date();
-    
+
     @Override
     public void onDeserialize(InputStream stream) throws SoamException {
         try {
-//            ObjectInputStream ois = new ObjectInputStream(stream);
-//            MyInput my = (MyInput) ois.readObject();
-//            ois.close();
-
             ByteArrayOutputStream outStream = new ByteArrayOutputStream();
             byte[] data = new byte[4096];
             int count = -1;
@@ -160,7 +156,7 @@ public class MyInput extends Message {
             data = null;
             String json = new String(outStream.toByteArray(), "ISO-8859-1");
             MyInput my = MyInput.fromJson(json);
-            
+
             this.m_boolean = my.isBoolean();
             this.m_int = my.getInt();
             this.m_long = my.getLong();
@@ -173,26 +169,21 @@ public class MyInput extends Message {
             throw new SoamException(ex);
         }
     }
-    
+
     @Override
     public void onSerialize(OutputStream stream) throws SoamException {
         try {
-//            ObjectOutputStream oos = new ObjectOutputStream(stream);
-//            oos.writeObject(this);
-//            oos.flush();
-//            oos.close();
-
             String json = this.toJson();
             stream.write(json.getBytes());
         } catch (Exception ex) {
             throw new SoamException(ex);
         }
     }
-    
+
     public String toJson() throws JsonGenerationException, JsonMappingException, IOException {
         return mapper.writeValueAsString(this);
     }
-    
+
     public static MyInput fromJson(String json) throws JsonParseException, JsonMappingException, IOException {
         if (json == null) {
             return null;
@@ -200,5 +191,5 @@ public class MyInput extends Message {
             return mapper.readValue(json, MyInput.class);
         }
     }
-    
+
 }

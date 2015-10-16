@@ -25,7 +25,7 @@ namespace SampleClient
             //change the headnode name here
             const string headnode = "localhost";
             const string serviceName = "SoamSvcLinux";
-            const int numRequests = 5;
+            const int numRequests = 100000;
             SessionStartInfo info = new SessionStartInfo(headnode, serviceName);
 
             Console.Write("Creating a session for SoamInvokeService...");
@@ -34,7 +34,7 @@ namespace SampleClient
             // Request and response messages in a durable session are persisted so that
             // in event of failure, no requests nor responses will be lost.  Another authorized
             // client can attached to a session with the same session Id and retrieve responses
-            using (DurableSession session = DurableSession.CreateSession(info))
+            using (Session session = Session.CreateSession(info))
             {
                 Console.WriteLine("done session id = {0}", session.Id);
                 NetTcpBinding binding = new NetTcpBinding(SecurityMode.Transport);
@@ -47,6 +47,8 @@ namespace SampleClient
                 using (BrokerClient<ISoamSvc> client = new BrokerClient<ISoamSvc>(session, binding))
                 {
                     Console.WriteLine("Sending {0} requests...", numRequests);
+                    DateTime timeMark1 = DateTime.Now;
+
                     for (int i = 0; i < numRequests; i++)
                     {
                         // SoamInvokeRequest are created as you add Service Reference
@@ -55,7 +57,7 @@ namespace SampleClient
                         SoamInvokeRequest request = new SoamInvokeRequest();
                         request.SetSoamInputObject(input);
                         client.SendRequest<SoamInvokeRequest>(request, i);
-                        Console.WriteLine("\tSent request {0}: {1}", i, input);
+                        //Console.WriteLine("\tSent request {0}: {1}", i, input);
                     }
 
                     // Flush the message.  After this call, the runtime system
@@ -63,7 +65,10 @@ namespace SampleClient
                     // the system will not process the requests.  The client.GetResponses() will return
                     // with an empty collection
                     client.EndRequests();
-                    Console.WriteLine("done");
+
+                    DateTime timeMark2 = DateTime.Now;
+                    double elapsedTimeSec = (timeMark2 - timeMark1).TotalMilliseconds / 1000.0;
+                    Console.WriteLine("Done sending {0} requests ... throughput={1}", numRequests, numRequests / elapsedTimeSec);
 
                     Console.WriteLine("Retrieving responses...");
 
@@ -76,15 +81,20 @@ namespace SampleClient
                         {
                             MyOutput reply = new MyOutput();
                             response.Result.GetSoamOutputObject(reply);
-                            Console.WriteLine("\tReceived response for request {0}: {1}", response.GetUserData<int>(), reply);
+                            //Console.WriteLine("\tReceived response for request {0}: {1}", response.GetUserData<int>(), reply);
                         }
                         catch (Exception ex)
                         {
-                            Console.WriteLine("Error occured while processing {0}-th request: {1}", response.GetUserData<int>(), ex.Message);
+                            //Console.WriteLine("Error occured while processing {0}-th request: {1}", response.GetUserData<int>(), ex.Message);
                         }
                     }
 
-                    Console.WriteLine("Done retrieving {0} responses", numRequests);
+                    DateTime timeMark3 = DateTime.Now;
+                    elapsedTimeSec = (timeMark3 - timeMark2).TotalMilliseconds / 1000.0;
+                    Console.WriteLine("Done retrieving {0} responses ... throughput={1}", numRequests, numRequests / elapsedTimeSec);
+
+                    elapsedTimeSec = (timeMark3 - timeMark1).TotalMilliseconds / 1000.0;
+                    Console.WriteLine("Total throughput={0}", numRequests / elapsedTimeSec);
                 }
 
                 //explict close the session to free the resource

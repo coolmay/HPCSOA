@@ -130,8 +130,8 @@ class CxfClientBase implements CallbackHandler
         }
 
         // debug purpose
-        cxfEndpoint.getInInterceptors().add(new LoggingInInterceptor());
-        cxfEndpoint.getOutInterceptors().add(new LoggingOutInterceptor());
+//        cxfEndpoint.getInInterceptors().add(new LoggingInInterceptor());
+//        cxfEndpoint.getOutInterceptors().add(new LoggingOutInterceptor());
     }
 
     /**

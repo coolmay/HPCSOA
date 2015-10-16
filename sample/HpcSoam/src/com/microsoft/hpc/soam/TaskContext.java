@@ -12,8 +12,8 @@ import java.io.ByteArrayOutputStream;
 public class TaskContext {
 
     private String m_userData = "";
-    private byte[] m_input;
-    private byte[] m_output;
+    private byte[] m_input = null;
+    private byte[] m_output = null;
 
     public String getUserData() {
         return m_userData;
@@ -31,26 +31,34 @@ public class TaskContext {
         return m_output;
     }
 
-    public void populateTaskInput(Message input) throws SoamException {
+    public void populateTaskInput(Message inMsg) throws SoamException {
+        if (inMsg == null) {
+            throw new SoamException("Input object is null.");
+        }
         if (m_input == null) {
             throw new SoamException("No input data bytes.");
         }
-        if(input == null){
-            throw new SoamException("Input object is null.");
+
+        try {
+            ByteArrayInputStream bais = new ByteArrayInputStream(m_input);
+            inMsg.onDeserialize(bais);
+        } catch (Exception ex) {
+            throw new SoamException(ex);
         }
-        
-        ByteArrayInputStream bais = new ByteArrayInputStream(m_input);
-        input.onDeserialize(bais);
     }
 
-    public void setTaskOutput(Message output) throws SoamException {
-        if(output == null){
+    public void setTaskOutput(Message outMsg) throws SoamException {
+        if (outMsg == null) {
             throw new SoamException("Output object is null.");
         }
-        
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        output.onSerialize(baos);
-        m_output = baos.toByteArray();
+
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            outMsg.onSerialize(baos);
+            m_output = baos.toByteArray();
+        } catch (Exception ex) {
+            throw new SoamException(ex);
+        }
     }
 
 }

@@ -14,31 +14,24 @@ import java.util.logging.Logger;
  */
 public abstract class ServiceContainer {
 
-    /**
-     * Not used.
-     */
-    public void run() {
-        return;
-    }
-    
-    @Override
-    protected void finalize() throws Throwable {
-        onDestroyService();
-        super.finalize();
+    public void onApplicationAttach(ServiceContext serviceContext) throws SoamException {
     }
 
-    public abstract void onCreateService(ServiceContext serviceContext) throws SoamException;
+    public void onApplicationDetach() throws SoamException {
+    }
 
-    public abstract void onSessionEnter(SessionContext sessionContext) throws SoamException;
+    public void onCreateService(ServiceContext serviceContext) throws SoamException {
+    }
+
+    public void onDestroyService() throws SoamException {
+    }
 
     public abstract void onInvoke(TaskContext taskContext) throws SoamException;
 
-    public abstract void onSessionLeave() throws SoamException;
+    public void onSessionEnter(SessionContext sessionContext) throws SoamException {
+    }
 
-    public abstract void onDestroyService() throws SoamException;
-
-    public abstract void onApplicationAttach(ServiceContext serviceContext) throws SoamException;
-
-    public abstract void onApplicationDetach() throws SoamException;
+    public void onSessionLeave() throws SoamException {
+    }   
 
 }

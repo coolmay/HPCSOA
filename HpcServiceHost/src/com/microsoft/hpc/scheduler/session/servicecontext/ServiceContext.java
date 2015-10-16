@@ -200,4 +200,24 @@ public final class ServiceContext {
             throw DataServerInfoConfigException;
         }
     }
+
+    public static String getCommonDataClientId() {
+        return Environment.getEnvironmentVariable(Constant.CcpCommonDataClientIdEnvVar);
+    }
+
+    public static String getJobId() {
+        return Environment.getEnvironmentVariable(Constant.JobIDEnvVar);
+    }
+
+    public static String getServiceName() {
+        return Environment.getEnvironmentVariable(Constant.ServiceNameEnvVar);
+    }
+
+    public static String getSoamServiceName() {
+        return Environment.getEnvironmentVariable(Constant.SoamServiceNameEnvVar);
+    }
+
+    public static String getSoaHome() {
+        return Environment.getEnvironmentVariable(Constant.SOA_HOMEEnvVar);
+    }
 }

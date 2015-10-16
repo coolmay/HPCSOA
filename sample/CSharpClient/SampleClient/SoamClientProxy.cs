@@ -294,7 +294,6 @@ namespace SoamService
 
         public void GetSoamOutputObject(Message output)
         {
-            Console.WriteLine("output bytes:{0}", SoamOutput.Length);
             using (InputStream ms = new InputStream(this.SoamOutput))
             {
                 output.onDeserialize(ms);

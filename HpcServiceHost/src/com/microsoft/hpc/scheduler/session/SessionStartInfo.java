@@ -72,6 +72,7 @@ import javax.xml.bind.JAXBElement;
 import com.microsoft.hpc.SessionStartInfoContract;
 import com.microsoft.schemas._2003._10.serialization.arrays.ArrayOfKeyValueOfstringstring;
 import com.microsoft.schemas._2003._10.serialization.arrays.ArrayOfKeyValueOfstringstring.KeyValueOfstringstring;
+import static java.lang.invoke.MethodHandles.constant;
 
 /**
  * This class includes the parameters for modifying
@@ -973,5 +974,14 @@ public class SessionStartInfo {
      */
     public void setUseSessionPool(Boolean value) {
         contract.setUseSessionPool(value);
+    }
+    
+    /**
+     * Set common data client id
+     * 
+     * @param dataClientId 
+     */
+    public void setCommonDataClientId(String dataClientId){
+        addEnvironment(Constant.CcpCommonDataClientIdEnvVar, dataClientId);
     }
 }
