@@ -107,11 +107,7 @@ public class MyInput extends Message {
         sb.append("float = ").append(this.m_float).append(", ");
         sb.append("double = ").append(this.m_double).append(", ");
         sb.append("string = ").append(this.m_string).append(", ");
-        sb.append("bytes = ");
-        for (int i = 0; i < this.m_bytes.length; i++) {
-            sb.append(this.m_bytes[i]).append(" ");
-        }
-        sb.append(", ");
+        sb.append("bytes size = ").append((this.m_bytes==null)?0:this.m_bytes.length).append(", ");
         sb.append("date = ").append(this.m_date.toString()).append(", ");
 
         return sb.toString();

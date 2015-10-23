@@ -6,6 +6,7 @@
             <xsd:import namespace="http://schemas.microsoft.com/2003/10/Serialization/" schemaLocation="schemas.microsoft.com.2003.10.Serialization.xsd" />
         </xsd:schema>
     </wsdl:types>
+
     <wsdl:message name="ISoamSvc_SoamInvoke_InputMessage">
         <wsdl:part name="parameters" element="tns:SoamInvoke" />
     </wsdl:message>
@@ -52,7 +53,7 @@
         </wsdl:operation>
     </wsdl:binding>
 
-    <wsdl:binding name="DefaultBinding_ISoamSvc" type="tns:ISoamSvc">
+    <wsdl:binding name="DefaultBinding_ISoamSvc_12" type="tns:ISoamSvc">
         <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
         <wsdl:operation name="SoamInvoke">
             <soap12:operation soapAction="http://tempuri.org/ISoamSvc/SoamInvoke" soapActionRequired="true" style="document" />
@@ -73,11 +74,12 @@
             </wsdl:output>
         </wsdl:operation>
     </wsdl:binding>
+
     <wsdl:service name="SoamSvc">
-        <wsdl:port name="DefaultBinding_ISoamSvc_11" binding="tns:DefaultBinding_ISoamSvc_11">
+        <wsdl:port name="DefaultBinding_ISoamSvc" binding="tns:DefaultBinding_ISoamSvc_11">
             <soap:address location="https://localhost/Broker" />
         </wsdl:port>
-        <wsdl:port name="DefaultBinding_ISoamSvc" binding="tns:DefaultBinding_ISoamSvc">
+        <wsdl:port name="DefaultBinding_ISoamSvc_12" binding="tns:DefaultBinding_ISoamSvc_12">
             <soap12:address location="https://localhost/Broker" />
         </wsdl:port>
     </wsdl:service>

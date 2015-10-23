@@ -27,4 +27,4 @@ echo Build completed
 copy /Y Microsoft-HpcServiceHost-3.0.jar %SOA_HOME%
 copy /Y Microsoft-HpcSession-3.0.jar %SOA_HOME%
 
-pause
+

@@ -55,8 +55,9 @@ public class MyService extends ServiceContainer {
 
         // Get the input that was sent from the client 
         try {
-            byte[] commonData = m_sessionContext.getCommonData();
             int factor = 10;
+            
+            byte[] commonData = m_sessionContext.getCommonData();
             if (commonData != null) {
                 factor = commonData.length;
             }
@@ -71,7 +72,8 @@ public class MyService extends ServiceContainer {
             myOutput.setFloat(myInput.getFloat() * factor);
             myOutput.setDouble(myInput.getDouble() * factor);
             myOutput.setLong(myInput.getLong() * factor);
-            myOutput.setString(m_serviceContext.getServiceName() + " returned: " + myInput.getString().toUpperCase());
+            myOutput.setString(m_serviceContext.getServiceName() + " returned: "
+                    + myInput.getString().toUpperCase());
             myOutput.setBytes(commonData);
             myOutput.setDate(new Date());
 

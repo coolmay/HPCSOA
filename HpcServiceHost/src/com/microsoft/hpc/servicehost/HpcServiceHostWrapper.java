@@ -487,8 +487,9 @@ public class HpcServiceHostWrapper {
             LoggingInInterceptor login = new LoggingInInterceptor();
             LoggingOutInterceptor logout = new LoggingOutInterceptor();
             // log the in/out bound message
-            host.getInInterceptors().add(login);
-            host.getOutInterceptors().add(logout);
+            // disable to speedup
+//            host.getInInterceptors().add(login);
+//            host.getOutInterceptors().add(logout);
             host.getOutFaultInterceptors().add(logout);
             host.getOutFaultInterceptors().add(
                     new AddHeaderOutInterceptor(this));
@@ -546,7 +547,7 @@ public class HpcServiceHostWrapper {
 
             HTTPServerPolicy httpServerPolicy = new HTTPServerPolicy();
             httpServerPolicy.setReceiveTimeout(receiveTimeout);
-            ServiceContext.Logger.traceEvent(Level.ALL, "Service Operation Timeout" + receiveTimeout);
+            ServiceContext.Logger.traceEvent(Level.INFO, "Service Operation Timeout" + receiveTimeout);
             destination.setServer(httpServerPolicy);
 
             TraceHelper.traceInformation("Service host successfully opened on "
@@ -768,7 +769,7 @@ public class HpcServiceHostWrapper {
 
         String jarNetworkPrefix = Environment
                 .getEnvironmentVariable(Constant.NetworkPrefixEnv);
-        ServiceContext.Logger.traceEvent(Level.ALL,
+        ServiceContext.Logger.traceEvent(Level.INFO,
                 "[HpcServiceHost]: Java network prefix = " + jarNetworkPrefix);
 
         String hostnameWithPrefix = InetAddress.getLocalHost().getHostName();
@@ -816,7 +817,7 @@ public class HpcServiceHostWrapper {
             return ErrorCode.ServiceHost_UnexpectedException;
         }
 
-        ServiceContext.Logger.traceEvent(Level.ALL,
+        ServiceContext.Logger.traceEvent(Level.INFO,
                 "[HpcServiceHost]: Job Id = " + jobId);
 
         String taskidenvvar = Environment.getEnvironmentVariable(Constant.TaskSystemIDEnvVar);
@@ -828,7 +829,7 @@ public class HpcServiceHostWrapper {
             return ErrorCode.ServiceHost_UnexpectedException;
         }
 
-        ServiceContext.Logger.traceEvent(Level.ALL,
+        ServiceContext.Logger.traceEvent(Level.INFO,
                 "[HpcServiceHost]: Task Id = " + taskId);
 
         String procnumenvvar = Environment
@@ -841,7 +842,7 @@ public class HpcServiceHostWrapper {
             return ErrorCode.ServiceHost_UnexpectedException;
         }
 
-        ServiceContext.Logger.traceEvent(Level.ALL,
+        ServiceContext.Logger.traceEvent(Level.INFO,
                 "[HpcServiceHost]: Number of processors (service capability) = "
                 + procNum);
 

@@ -108,12 +108,7 @@ namespace SampleClient
             sb.AppendFormat("float = {0}, ", this.m_float);
             sb.AppendFormat("double = {0}, ", this.m_double);
             sb.AppendFormat("string = {0}, ", this.m_string);
-            sb.Append("bytes = ");
-            foreach (byte b in this.m_bytes)
-            {
-                sb.AppendFormat("{0} ", b);
-            }
-            sb.Append(", ");
+            sb.AppendFormat("bytes size = {0}, ", (this.m_bytes == null) ? 0 : this.m_bytes.Length);
             sb.AppendFormat("date = {0}, ", this.m_date.ToString());
 
             return sb.ToString();

@@ -1,19 +1,19 @@
 @echo off
 
-set SRC_ROOT=D:\SOAJava
+set SRC_ROOT=D:\HPCSOA
 
 cd %SRC_ROOT%/HpcServiceHost/src
-makejar.cmd
+call makejar.cmd
 
 cd %SRC_ROOT%/sample/HpcSoam/src
-makejar.cmd
+call makejar.cmd
 
 cd %SRC_ROOT%/sample/HpcSoamSvc/src
-makejar.cmd
+call makejar.cmd
 
 cd %SRC_ROOT%/sample/SampleService/src
-makejar.cmd
+call makejar.cmd
 
 cd %SRC_ROOT%/sample/SampleClient/src
-RunTest.cmd src
+call RunTest.cmd src
 

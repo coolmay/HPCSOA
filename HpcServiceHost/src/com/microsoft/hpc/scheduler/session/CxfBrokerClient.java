@@ -412,6 +412,7 @@ class CxfBrokerClient<TContract extends Service> extends CxfClientBase {
 
         // send out the message
         dispatch.invokeOneWay(msg);
+        //dispatch.invokeAsync(msg);
     }
 
     public String getRequestAction(Class<?> messageClass)
