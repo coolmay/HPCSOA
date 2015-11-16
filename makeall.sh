@@ -17,3 +17,4 @@ bash makejar.sh
 cd ${SRC_ROOT}/sample/SampleClient/src
 bash RunTest.sh src
 
+cd ${SRC_ROOT}

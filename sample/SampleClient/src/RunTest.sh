@@ -6,7 +6,7 @@ if [ "$#" = 0 ] ; then
     exit 0
 fi
 
-export JAVA_HOME=/usr/java/jdk1.8.0_60
+export JAVA_HOME=/usr/java/jdk1.7.0_80
 export CXF_HOME=/opt/apache-cxf-2.7.17
 export SOA_HOME=/soa/SoamSvcHostLinux
 Keystore_Password=password

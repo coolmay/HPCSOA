@@ -2,18 +2,19 @@
 
 set SRC_ROOT=D:\HPCSOA
 
-cd %SRC_ROOT%/HpcServiceHost/src
+cd %SRC_ROOT%\HpcServiceHost\src
 call makejar.cmd
 
-cd %SRC_ROOT%/sample/HpcSoam/src
+cd %SRC_ROOT%\sample\HpcSoam\src
 call makejar.cmd
 
-cd %SRC_ROOT%/sample/HpcSoamSvc/src
+cd %SRC_ROOT%\sample\HpcSoamSvc\src
 call makejar.cmd
 
-cd %SRC_ROOT%/sample/SampleService/src
+cd %SRC_ROOT%\sample\SampleService\src
 call makejar.cmd
 
-cd %SRC_ROOT%/sample/SampleClient/src
+cd %SRC_ROOT%\sample\SampleClient\src
 call RunTest.cmd src
 
+cd %SRC_ROOT%

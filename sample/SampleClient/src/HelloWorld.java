@@ -338,7 +338,7 @@ public class HelloWorld {
     }
 
     private static void getResponses(final List<BrokerClient<SoamSvc>> clientList) {
-        ThreadPoolExecutor threadPool = new ThreadPoolExecutor(batchCount * nbatchthreads, batchCount * nbatchthreads, 60, TimeUnit.SECONDS, queue);
+        final ThreadPoolExecutor threadPool = new ThreadPoolExecutor(batchCount * nbatchthreads, batchCount * nbatchthreads, 60, TimeUnit.SECONDS, queue);
 
         Thread[] threads = new Thread[batchCount];
         for (int i = 0; i < batchCount; i++) {
