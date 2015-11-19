@@ -1,6 +1,6 @@
 @echo off
 
-set SRC_ROOT=D:\HPCSOA
+set SRC_ROOT=C:\HPCSOA
 
 cd %SRC_ROOT%\HpcServiceHost\src
 call makejar.cmd

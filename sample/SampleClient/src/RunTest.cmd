@@ -7,9 +7,9 @@ if [%1]==[] (
     exit /b 0
 )    
 
-set JAVA_HOME=c:\Program Files\Java\jdk1.7.0_80
+set JAVA_HOME=%ProgramFiles%\Java\jdk1.7.0_80
 set CXF_HOME=C:\java\apache-cxf-2.7.17
-set SOA_HOME=D:\HPCSOA\SoamSvcHost
+set SOA_HOME=C:\HPCSOA\SoamSvcHost
 set Keystore_Password=password
 set CLASSPATH=.;%SOA_HOME%\Microsoft-HpcSession-3.0.jar;%CXF_HOME%\lib\cxf-manifest.jar;%SOA_HOME%\HpcSoam.jar;%SOA_HOME%\HpcSoamSvc.jar;%SOA_HOME%\SampleService.jar;%SOA_HOME%\jackson-all-1.9.0.jar
 

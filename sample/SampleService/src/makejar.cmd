@@ -3,7 +3,7 @@ setlocal
 
 set JAVA_HOME=%ProgramFiles%\Java\jdk1.7.0_80
 set CXF_HOME=c:\java\apache-cxf-2.7.17
-set SOA_HOME=D:\HPCSOA\SoamSvcHost
+set SOA_HOME=C:\HPCSOA\SoamSvcHost
 set CLASSPATH=.;%SOA_HOME%\jackson-all-1.9.0.jar;%SOA_HOME%\HpcSoam.jar
 set JAVAC="%JAVA_HOME%\bin\javac.exe"
 
