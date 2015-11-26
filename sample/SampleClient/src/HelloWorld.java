@@ -21,12 +21,12 @@ import sample.common.*;
 
 public class HelloWorld {
 
-    private static String username = "hpc\\hpcadmin"; // valid username to submit SOA job
-    private static String password = "!!123abc";  // valid user password 
-    private static String headnode = "SOATest-HN"; // HPC cluster headnode hostname
+    private static String username = "[Domain\\User]"; // valid username to submit SOA job
+    private static String password = "[Password]";  // valid user password 
+    private static String headnode = "[HeadNode]"; // HPC cluster headnode hostname
     private static int nrequests = 10;
 
-    final private static String serviceName = "SoamSvcLinux";
+    final private static String serviceName = "SoamSvc";
     final private static int nHTRequests = 100000;
     final private static int batchCount = 16;
     final private static int nbatchrequests = nHTRequests / batchCount;
@@ -39,12 +39,11 @@ public class HelloWorld {
         nerrs += ParseCmdLine(args);
         if (nerrs == 0) {
             try {
-                nerrs += RunHighThroughputTest();
+                //nerrs += RunHighThroughputTest();
                 //nerrs += RunSoamTest();
-                //nerrs += RunBasicTest();
+                nerrs += RunBasicTest();
                 //nerrs += RunCommonDataTest();
                 //nerrs += RunResponseHandlerTest();
-                //nerrs += RunSoaTracingTest();
             } catch (Exception e) {
                 nerrs++;
                 e.printStackTrace();
@@ -86,6 +85,7 @@ public class HelloWorld {
         int nresponses = 0;
 
         SessionStartInfo info = new SessionStartInfo(headnode, serviceName, username, password);
+        
         System.out.printf("Creating a session for %s...\n", serviceName);
 
         try {
@@ -122,7 +122,7 @@ public class HelloWorld {
             client.endRequests();
 
             long timeMark2 = System.nanoTime();
-            double elapsedTimeSec = (timeMark2 - timeMark1) / 1000000000.0;
+            double elapsedTimeSec = (timeMark2 - timeMark1) / 1e9;
             System.out.println("Done calling endRequests() ...throughput=" + (nrequests / elapsedTimeSec));
 
             System.out.println("Retrieving responses...");
@@ -140,10 +140,10 @@ public class HelloWorld {
             }
 
             long timeMark3 = System.nanoTime();
-            elapsedTimeSec = (timeMark3 - timeMark2) / 1000000000.0;
+            elapsedTimeSec = (timeMark3 - timeMark2) / 1e9;
             System.out.printf("Done retrieving %d responses ... throughput=%f %n", nresponses, (nresponses / elapsedTimeSec));
 
-            elapsedTimeSec = (timeMark3 - timeMark1) / 1000000000.0;
+            elapsedTimeSec = (timeMark3 - timeMark1) / 1e9;
             System.out.printf("total throughput=%f %n", (nresponses / elapsedTimeSec));
 
             client.close();
@@ -177,6 +177,7 @@ public class HelloWorld {
 
             // pass data client id to session
             info.setCommonDataClientId(dataClientId);
+            
 
             Session session = Session.createSession(info);
             System.out.printf("new session id = %d\n", session.getId());
@@ -195,7 +196,7 @@ public class HelloWorld {
             client.endRequests();
 
             long timeMark2 = System.nanoTime();
-            double elapsedTimeSec = (timeMark2 - timeMark1) / 1000000000.0;
+            double elapsedTimeSec = (timeMark2 - timeMark1) / 1e9;
             System.out.println("Done calling endRequests() ...throughput=" + (nrequests / elapsedTimeSec));
 
             System.out.println("Retrieving responses...");
@@ -212,10 +213,10 @@ public class HelloWorld {
             }
 
             long timeMark3 = System.nanoTime();
-            elapsedTimeSec = (timeMark3 - timeMark2) / 1000000000.0;
+            elapsedTimeSec = (timeMark3 - timeMark2) / 1e9;
             System.out.printf("Done retrieving %d responses ... throughput=%f %n", nresponses, (nresponses / elapsedTimeSec));
 
-            elapsedTimeSec = (timeMark3 - timeMark1) / 1000000000.0;
+            elapsedTimeSec = (timeMark3 - timeMark1) / 1e9;
             System.out.printf("total throughput=%f %n", (nresponses / elapsedTimeSec));
 
             client.close();
@@ -246,7 +247,7 @@ public class HelloWorld {
             sendRequests(session, clientList);
 
             long timeMark2 = System.nanoTime();
-            double elapsedTimeSec = (timeMark2 - timeMark1) / 1000000000.0;
+            double elapsedTimeSec = (timeMark2 - timeMark1) / 1e9;
             System.out.println("Done calling endRequests() ...throughput=" + (nHTRequests / elapsedTimeSec));
 
             System.out.println("Retrieving responses...");
@@ -254,10 +255,10 @@ public class HelloWorld {
             getResponses(clientList);
 
             long timeMark3 = System.nanoTime();
-            elapsedTimeSec = (timeMark3 - timeMark2) / 1000000000.0;
+            elapsedTimeSec = (timeMark3 - timeMark2) / 1e9;
             System.out.printf("Done retrieving %d responses ... throughput=%f %n", nHTRequests, (nHTRequests / elapsedTimeSec));
 
-            elapsedTimeSec = (timeMark3 - timeMark1) / 1000000000.0;
+            elapsedTimeSec = (timeMark3 - timeMark1) / 1e9;
             System.out.printf("total throughput=%f %n", (nHTRequests / elapsedTimeSec));
 
             session.close();
@@ -400,161 +401,114 @@ public class HelloWorld {
         }
     }
 
-//    private static int RunBasicTest() {
-//        int nerrs = 0;
-//        SessionStartInfo info = new SessionStartInfo(headnode, serviceName, username, password);
-////        Version ver = new Version(4, 4);
-////        SessionStartInfo info = new SessionStartInfo(headnode, serviceName, ver, username, password);
-//
-//        System.out.printf("Creating a session for %s...\n", serviceName);
-//
-//        try {
-//            DurableSession session = DurableSession.createSession(info);
-//            System.out.printf("new session id = %d\n", session.getId());
-//
-//            BrokerClient<SoamSvc> client = new BrokerClient<SoamSvc>(session, SoamSvc.class);
-//            System.out.printf("Sending %d requests...\n", nrequests);
-//            for (int i = 0; i < nrequests; i++) {
-//                ObjectFactory of = new ObjectFactory();
-//                Echo request = of.createEcho();
-//                request.setInput(of.createEchoInput("hello world!"));
-//                System.out.printf("Sending %d / %d request...\n", i + 1, nrequests);
-//                client.sendRequest(request, i);
-//                System.out.printf("Sent %d / %d request...\n", i + 1, nrequests);
-//            }
-//            System.out.println("call endRequests() ...");
-//            client.endRequests();
-//
-//            System.out.println("Retrieving responses...");
-//
-//            for (BrokerResponse<EchoResponse> response : client.<EchoResponse>getResponses(EchoResponse.class)) {
-//                try {
-//                    String reply = response.getResult().getEchoResult().getValue();
-//                    System.out.printf("\tReceived response for request %s: %s%n", response.getUserData(), reply);
-//                } catch (Exception ex) {
-//                    nerrs++;
-//                    System.out.printf("Error: process %s-th reuqest: %s%n", response.getUserData(), ex.toString());
-//                }
-//            }
-//            System.out.printf("Done retrieving %d responses%n", nrequests);
-//            client.close();
-//            session.close();
-//        } catch (Throwable e) {
-//            nerrs++;
-//            e.printStackTrace();
-//        }
-//        return nerrs;
-//    }
-//
-//    private static int RunResponseHandlerTest() {
-//        int nerrs = 0;
-//        SessionStartInfo info = new SessionStartInfo(headnode, serviceName, username, password);
-//        System.out.printf("Creating a session for %s...\n", serviceName);
-//
-//        try {
-//            final DurableSession session = DurableSession.createSession(info);
-//            System.out.printf("new session id = %d\n", session.getId());
-//
-//            BrokerClient<SoamSvc> client = new BrokerClient<SoamSvc>(session, SoamSvc.class);
-//
-//            client.setResponseHandler(EchoResponse.class,
-//                    new ResponseListener<EchoResponse>() {
-//                        int fetchedCount = 0;
-//
-//                        @Override
-//                        public void endOfMessage() {
-//                            synchronized (session) {
-//                                session.notify();
-//                            }
-//                        }
-//
-//                        @Override
-//                        public void raiseError(Exception e) {
-//                            e.printStackTrace();
-//                        }
-//
-//                        @Override
-//                        public void responseReturned(BrokerResponse<EchoResponse> response) {
-//                            try {
-//                                String reply = response.getResult().getEchoResult().getValue();
-//                                System.out.printf("\tReceived response for request %s: %s%n", response.getUserData(), reply);
-//                            } catch (SOAPFaultException e) {
-//                                e.printStackTrace();
-//                            } catch (SOAPException e) {
-//                                e.printStackTrace();
-//                            }
-//
-//                        }
-//
-//                    });
-//
-//            System.out.printf("Sending %d requests...\n", nrequests);
-//            for (int i = 0; i < nrequests; i++) {
-//                ObjectFactory of = new ObjectFactory();
-//                Echo request = of.createEcho();
-//                request.setInput(of.createEchoInput("hello world!"));
-//                client.sendRequest(request, i);
-//
-//            }
-//            System.out.println("call endRequests() ...");
-//            client.endRequests();
-//
-//            System.out.println("Retrieving responses...");
-//
-//            System.out.printf("Done retrieving %d responses%n", nrequests);
-//            synchronized (session) {
-//                session.wait();
-//            }
-//            session.close(true);
-//        } catch (Throwable e) {
-//            nerrs++;
-//            e.printStackTrace();
-//        }
-//
-//        return nerrs;
-//    }
-//
-//    private static int RunSoaTracingTest() {
-//        int nerrs = 0;
-//        SessionStartInfo info = new SessionStartInfo(headnode, serviceName, username, password);
-//        // Set transport scheme to Custom to enable SOA tracing 
-//        info.setTransportScheme("Custom");
-//        System.out.printf("Creating a session for %s...\n", serviceName);
-//
-//        try {
-//            DurableSession session = DurableSession.createSession(info);
-//            System.out.printf("new session id = %d\n", session.getId());
-//
-//            BrokerClient<SoamSvc> client = new BrokerClient<SoamSvc>(session, SoamSvc.class);
-//            System.out.printf("Sending %d requests...\n", nrequests);
-//            for (int i = 0; i < nrequests; i++) {
-//                ObjectFactory of = new ObjectFactory();
-//                Echo request = of.createEcho();
-//                request.setInput(of.createEchoInput("hello world!"));
-//                // Specify message id in each request for message correlation
-//                client.sendRequest(request, i, UUID.randomUUID());
-//            }
-//            System.out.println("call endRequests() ...");
-//            client.endRequests();
-//
-//            System.out.println("Retrieving responses...");
-//
-//            for (BrokerResponse<EchoResponse> response : client.<EchoResponse>getResponses(EchoResponse.class)) {
-//                try {
-//                    String reply = response.getResult().getEchoResult().getValue();
-//                    System.out.printf("\tReceived response for request %s: %s%n", response.getUserData(), reply);
-//                } catch (Exception ex) {
-//                    nerrs++;
-//                    System.out.printf("Error: process %s-th reuqest: %s%n", response.getUserData(), ex.toString());
-//                }
-//            }
-//            System.out.printf("Done retrieving %d responses%n", nrequests);
-//            client.close();
-//            session.close();
-//        } catch (Throwable e) {
-//            nerrs++;
-//            e.printStackTrace();
-//        }
-//        return nerrs;
-//    }
+    private static int RunBasicTest() {
+        int nerrs = 0;
+        SessionStartInfo info = new SessionStartInfo(headnode, serviceName, username, password);
+
+        System.out.printf("Creating a session for %s...\n", serviceName);
+
+        try {
+            Session session = Session.createSession(info);
+            System.out.printf("new session id = %d\n", session.getId());
+
+            BrokerClient<SoamSvc> client = new BrokerClient<SoamSvc>(session, SoamSvc.class);
+            System.out.printf("Sending %d requests...\n", nrequests);
+            for (int i = 0; i < nrequests; i++) {
+            	MyInput input = new MyInput();
+                ObjectFactory of = new ObjectFactory();
+                SoamInvoke request = of.createSoamInvoke();
+                request.setSoamInputObject(input);
+                //System.out.printf("Sending %d / %d request...\n", i + 1, nrequests);
+                client.sendRequest(request, i);
+                System.out.printf("Sent %d / %d request...\n", i + 1, nrequests);
+            }
+            System.out.println("call endRequests() ...");
+            client.endRequests();
+
+            System.out.println("Retrieving responses...");
+
+            for (BrokerResponse<SoamInvokeResponse> response : client.<SoamInvokeResponse>getResponses(SoamInvokeResponse.class)) {
+                try {
+                	MyOutput reply = new MyOutput();
+                    response.getResult().getSoamOutputObject(reply);
+                    System.out.printf("\tReceived response for request %s: %s%n", response.getUserData(), reply);
+                } catch (Exception ex) {
+                    nerrs++;
+                    System.out.printf("Error: process %s-th reuqest: %s%n", response.getUserData(), ex.toString());
+                }
+            }
+            System.out.printf("Done retrieving %d responses%n", nrequests);
+            client.close();
+            session.close();
+        } catch (Throwable e) {
+            nerrs++;
+            e.printStackTrace();
+        }
+        return nerrs;
+    }
+
+    private static int RunResponseHandlerTest() {
+        int nerrs = 0;
+        SessionStartInfo info = new SessionStartInfo(headnode, serviceName, username, password);
+        System.out.printf("Creating a session for %s...\n", serviceName);
+
+        try {
+            final DurableSession session = DurableSession.createSession(info);
+            System.out.printf("new session id = %d\n", session.getId());
+
+            BrokerClient<SoamSvc> client = new BrokerClient<SoamSvc>(session, SoamSvc.class);
+
+            client.setResponseHandler(SoamInvokeResponse.class,
+                    new ResponseListener<SoamInvokeResponse>() {
+                        int fetchedCount = 0;
+
+                        @Override
+                        public void endOfMessage() {
+                            synchronized (session) {
+                                session.notify();
+                            }
+                        }
+
+                        @Override
+                        public void raiseError(Exception e) {
+                            e.printStackTrace();
+                        }
+
+                        @Override
+                        public void responseReturned(BrokerResponse<SoamInvokeResponse> response) {
+                            try {
+                            	MyOutput reply = new MyOutput();
+                                response.getResult().getSoamOutputObject(reply);
+                                System.out.printf("\tReceived response for request %s: %s%n", response.getUserData(), reply);
+                            } catch (Exception ex) {
+                                System.out.printf("Error: process %s-th reuqest: %s%n", response.getUserData(), ex.toString());
+                            }
+                        }
+                        
+                    });
+
+            System.out.printf("Sending %d requests...\n", nrequests);
+            for (int i = 0; i < nrequests; i++) {
+            	MyInput input = new MyInput();
+                ObjectFactory of = new ObjectFactory();
+                SoamInvoke request = of.createSoamInvoke();
+                request.setSoamInputObject(input);
+                client.sendRequest(request, i);
+                System.out.printf("Sent %d / %d request...\n", i + 1, nrequests);
+            }
+            System.out.println("call endRequests() ...");
+            client.endRequests();
+
+            System.out.printf("Done retrieving %d responses%n", nrequests);
+            synchronized (session) {
+                session.wait();
+            }
+            session.close(true);
+        } catch (Throwable e) {
+            nerrs++;
+            e.printStackTrace();
+        }
+
+        return nerrs;
+    }
 }
