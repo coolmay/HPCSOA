@@ -132,6 +132,9 @@ public class MessagePreemptionOutInterceptor extends AbstractSoapInterceptor {
                 throw fault;
 
             } else {
+                // Remove the id from the processing list
+                this.hpcHostWrapper.processingMessageIds.remove(id);
+
                 // The service host receives the cancel event when the request
                 // is
                 // being processed, so add a header to notice the broker.
