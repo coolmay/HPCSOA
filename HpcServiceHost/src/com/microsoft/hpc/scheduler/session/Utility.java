@@ -273,8 +273,9 @@ class Utility
             return "";
         }
 
-        while (soapHeader.getChildElements().hasNext()) {
-            Node node = (Node) soapHeader.getChildElements().next();
+        Iterator<?> it = soapHeader.getChildElements();
+        while (it.hasNext()) {
+            Node node = (Node) it.next();
             if (node.getNodeName().equalsIgnoreCase("Action")) {
                 action = node.getFirstChild().getTextContent();
                 break;
